@@ -12,6 +12,7 @@ struct ContentView: View {
         VStack {
             Title()
             Guesses()
+            Spacer()
         }.padding(.vertical)
     }
 }
@@ -41,12 +42,14 @@ struct Guesses: View {
 
 
 struct Row: View {
+    // Note: Should we constrain the number of letters, e.g. with a 5-tuple?
     var letters: [Character?] = [nil, nil, nil, nil, nil]
     
     var body: some View {
         HStack {
             ForEach(letters, id: \.self) { letter in
                 LetterCard(letter: letter)
+                    .aspectRatio(1, contentMode: .fit)
             }
         }
     }
@@ -65,7 +68,7 @@ struct LetterCard: View {
     
     var body: some View {
         let outline = RoundedRectangle(cornerRadius: 15)
-            .stroke(lineWidth: 2)
+            .strokeBorder(lineWidth: 2)
         
         switch letter {
         case .some(let char):
