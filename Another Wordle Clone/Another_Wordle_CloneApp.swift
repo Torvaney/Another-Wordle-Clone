@@ -9,9 +9,11 @@ import SwiftUI
 
 @main
 struct Another_Wordle_CloneApp: App {
+    let game = WordleGame()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(game: game)
         }
     }
 }

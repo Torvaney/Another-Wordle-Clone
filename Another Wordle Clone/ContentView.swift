@@ -8,10 +8,12 @@
 import SwiftUI
 
 struct ContentView: View {
+    var game: WordleGame
+    
     var body: some View {
         VStack {
             Title()
-            Guesses()
+            Guesses(game.guesses)
             Spacer()
         }.padding(.vertical)
     }
@@ -28,27 +30,31 @@ struct Title: View {
 
 
 struct Guesses: View {
+    let guesses: [WordleGame.WordGuess]
+    
+    init(_ guesses: [WordleGame.WordGuess]) {
+        self.guesses = guesses
+    }
+    
     var body: some View {
         VStack {
-            Row(letters: ["C", "A", "R", "E", "T"])
-            Row(letters: ["I", "N", "D", "O", "L"])
-            Row()
-            Row()
-            Row()
-            Row()
+            ForEach(guesses, id: \.self) { guess in
+                Row(guess: guess)
+            }
         }.padding(.horizontal)
     }
 }
 
 
 struct Row: View {
-    // Note: Should we constrain the number of letters, e.g. with a 5-tuple?
-    var letters: [Character?] = [nil, nil, nil, nil, nil]
+    var guess: WordleGame.WordGuess
     
     var body: some View {
         HStack {
-            ForEach(letters, id: \.self) { letter in
-                LetterCard(letter: letter)
+            ForEach(0..<5) { ix in
+                // TODO: need a permanent fix to this. Maybe WordGuess should just be hashable?
+                let letterGuess = guess[ix]
+                LetterCard(letterGuess)
                     .aspectRatio(1, contentMode: .fit)
             }
         }
@@ -64,24 +70,48 @@ struct LetterCard: View {
     //   * guessed (submitted)
     //   * guessed (submitted, in word)
     //   * guessed (submitted, in right place)
-    var letter: Character?
+    var letterGuess: WordleGame.LetterGuess
+    
+    init(_ letterGuess: WordleGame.LetterGuess) {
+        self.letterGuess = letterGuess
+    }
     
     var body: some View {
-        let outline = RoundedRectangle(cornerRadius: 15)
-            .strokeBorder(lineWidth: 2)
+        let shape = RoundedRectangle(cornerRadius: 15)
+        let outline = shape.strokeBorder(lineWidth: 2)
         
-        switch letter {
-        case .some(let char):
+        switch letterGuess {
+        case .empty:
+            outline
+        case .pending(let letter):
             ZStack {
                 outline
-                Text(String(char))
-                    .bold()
+                viewLetter(letter)
             }
-        case .none:
+        case .notInWord(let letter):
             ZStack {
                 outline
+                viewLetter(letter)
+            }
+        case .inWord(let letter):
+            ZStack {
+                shape.fill(.orange)
+                outline
+                viewLetter(letter)
+            }
+        case .inPosition(let letter):
+            ZStack {
+                shape.fill(.green)
+                outline
+                viewLetter(letter)
             }
         }
+    }
+    
+    func viewLetter(_ letter: Character) -> some View {
+        Text(String(letter))
+            .bold()
+            .font(.headline)
     }
 }
 
@@ -93,9 +123,9 @@ struct LetterCard: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            ContentView()
+            ContentView(game: WordleGame())
                 .preferredColorScheme(.light)
-            ContentView()
+            ContentView(game: WordleGame())
                 .preferredColorScheme(.dark)
         }
     }

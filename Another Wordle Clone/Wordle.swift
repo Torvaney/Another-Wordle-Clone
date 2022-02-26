@@ -1,0 +1,55 @@
+//
+//  Wordle.swift
+//  Another Wordle Clone
+//
+//  Created by Ben Torvaney on 26/02/2022.
+//
+
+import Foundation
+
+
+struct Wordle {
+    let target: String
+    let dictionary: [String]
+    
+    let maxGuesses: Int
+    private(set) var prevGuesses: [String]
+    private(set) var currentGuess: [Character]
+    
+    var targetLength: Int {
+        target.count
+    }
+    
+    init(dictionary: [String]) {
+        target = dictionary.randomElement() ?? "NIL STATE SHOULD BE IMPOSSIBLE?!"  // NOTE: make impossible states impossible
+        self.dictionary = dictionary
+        
+        maxGuesses = 6
+        prevGuesses = []
+        currentGuess = []
+    }
+    
+    // Handling user input
+    // User can: Add letter, remove letter, submit guess
+    // Maybe a custom data structure (like a Zipper) would handle this more elegantly
+    mutating func addLetter(_ letter: Character) {
+        if currentGuess.count < targetLength {
+            currentGuess.append(letter)
+        }
+    }
+
+    mutating func removeLetter() {
+        currentGuess.removeLast()
+    }
+    
+    // NOTE: might be useful later to return some data indicating the outcome
+    // of the submission (success, invalid word, &c)
+    mutating func submit() {
+        if (currentGuess.count == targetLength) && (dictionary.contains(String(currentGuess))) {
+            prevGuesses.append(String(currentGuess))
+            currentGuess = [] 
+        }
+        
+        // NOTE: need some end-of-game handling if maxGuesses is reached
+    }
+}
