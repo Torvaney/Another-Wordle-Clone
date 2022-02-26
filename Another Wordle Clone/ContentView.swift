@@ -84,20 +84,10 @@ struct LetterCard: View {
                 outline
                 viewLetter(letter)
             }
-        case .notInWord(let letter):
+            
+        case .submitted(let letter, let status):
             ZStack {
-                outline
-                viewLetter(letter)
-            }
-        case .inWord(let letter):
-            ZStack {
-                shape.fill(.orange)
-                outline
-                viewLetter(letter)
-            }
-        case .inPosition(let letter):
-            ZStack {
-                shape.fill(.green)
+                shape.fill(statusColour(status))
                 outline
                 viewLetter(letter)
             }
@@ -133,19 +123,15 @@ struct LetterKey: View {
     let letter: Character
     @ObservedObject var game: WordleGame
     
-    var isUsed: Bool {
-        game.usedLetters.contains(letter)
-    }
-    
     @ViewBuilder
     var background: some View {
         let shape = RoundedRectangle(cornerRadius: 5)
         
-        // NOTE: actually need to refactor this to show the best status achieved for that
-        // letter so far. I think this will require a little rethinking of the ViewModel
-        if isUsed {
-            shape.fill(.gray)
-        } else {
+        switch game.guessedLetters[letter] {
+        case nil:
+            shape.strokeBorder()
+        case .some(let status):
+            shape.fill(statusColour(status))
             shape.strokeBorder()
         }
     }
@@ -186,6 +172,18 @@ struct BackspaceKey: View {
         .onTapGesture {
             game.removeLetter()
         }
+    }
+}
+
+
+func statusColour(_ status: WordleGame.GuessStatus) -> Color {
+    switch status {
+    case .notInWord:
+        return .gray
+    case .inWord:
+        return .orange
+    case .inPosition:
+        return .green
     }
 }
 

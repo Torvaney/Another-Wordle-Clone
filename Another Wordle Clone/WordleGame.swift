@@ -14,6 +14,7 @@ class WordleGame: ObservableObject {
     // I guess the dictionary should contain some representation of word length
     @Published private var model: Wordle =  Wordle(dictionary: ["POWER", "CAIRN", "FUNKY", "VIVID", "DANCE"])
     
+    
     // MARK: Methods fowarded from model (user intents)
     
     func addLetter(_ letter: Character) {
@@ -27,6 +28,7 @@ class WordleGame: ObservableObject {
     func submit() {
         model.submit()
     }
+    
     
     // MARK: Adding inferred metadata to guesses
     
@@ -53,37 +55,67 @@ class WordleGame: ObservableObject {
     
     func evaluateGuess(_ guess: String, target: String) -> WordGuess {
         zip(guess, target).map { (guessLetter, targetLetter) -> LetterGuess in
-            if (guessLetter == targetLetter) {
-                return .inPosition(guessLetter)
-            }
-            else if target.contains(guessLetter) {
-                return .inWord(guessLetter)
-            }
-            else {
-                return .notInWord(guessLetter)
-            }
+            LetterGuess.submitted(guessLetter, status: evaluateLetter(guessLetter, targetLetter, target))
+        }
+    }
+            
+    func evaluateLetter(_ guessLetter: Character, _ targetLetter: Character, _ target: String) -> GuessStatus {
+        if (guessLetter == targetLetter) {
+            return .inPosition
+        }
+        else if target.contains(guessLetter) {
+            return .inWord
+        }
+        else {
+            return .notInWord
         }
     }
     
     enum LetterGuess: Hashable {
-        // NOTE: should these two groups of cases be separated to ensure that the
-        // compiler can check that they are used in appropriate places?
-        // E.g. maybe viewing the current guess should be totally different
-        // from the previous guesses, and thus these types should be split out
-        
-        // Current guess
+        // Current guess (and future guesses)
         case empty
         case pending(_ letter: Character)
         
-        // Submitted guess
-        case notInWord(_ letter: Character)
-        case inWord(_ letter: Character)
-        case inPosition(_ letter: Character)
+        // Submitted guesses
+        case submitted(_ letter: Character, status: GuessStatus)
     }
+    
+    enum GuessStatus: Comparable {
+        case notInWord
+        case inWord
+        case inPosition
+        
+        static func < (lhs: Self, rhs: Self) -> Bool {
+             switch (lhs, rhs) {
+             case (.notInWord, _):
+                 return true
+             case (.inWord, .inPosition):
+                 return true
+             default:
+                 return false
+             }
+         }
+    }
+    
     
     // MARK: Getting used letters
     
     var usedLetters: Set<Character> {
         Set(model.prevGuesses.joined(separator: ""))
+    }
+    
+    var guessedLetters: Dictionary<Character, GuessStatus> {
+        let letterGuesses: [(Character, GuessStatus)] = prevGuesses
+            .joined()
+            .compactMap { guess in
+                switch guess {
+                case .submitted(let letter, status: let status):
+                    return (letter, status)
+                default:
+                    return nil
+                }
+            }
+        
+        return Dictionary(letterGuesses, uniquingKeysWith: min)
     }
 }
