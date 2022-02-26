@@ -8,12 +8,15 @@
 import SwiftUI
 
 struct ContentView: View {
-    var game: WordleGame
+    @ObservedObject var game: WordleGame
     
     var body: some View {
         VStack {
             Title()
+            Spacer()
             Guesses(game.guesses)
+            Spacer()
+            Keyboard(game: game)
             Spacer()
         }.padding(.vertical)
     }
@@ -52,7 +55,7 @@ struct Row: View {
     var body: some View {
         HStack {
             ForEach(0..<5) { ix in
-                // TODO: need a permanent fix to this. Maybe WordGuess should just be hashable?
+                // TODO: need a permanent fix for this. Maybe WordGuess should just be a hashable struct?
                 let letterGuess = guess[ix]
                 LetterCard(letterGuess)
                     .aspectRatio(1, contentMode: .fit)
@@ -63,13 +66,6 @@ struct Row: View {
 
 
 struct LetterCard: View {
-    // Note: Will need a more complex data type to represent each letter card in future.
-    // Letters can be
-    //   * empty
-    //   * guessed (temp),
-    //   * guessed (submitted)
-    //   * guessed (submitted, in word)
-    //   * guessed (submitted, in right place)
     var letterGuess: WordleGame.LetterGuess
     
     init(_ letterGuess: WordleGame.LetterGuess) {
@@ -116,6 +112,83 @@ struct LetterCard: View {
 }
 
 
+struct Keyboard: View {
+    let alphabet = "QWERTYUIOPASDFGHJKLZXCVBNM"
+    @ObservedObject var game: WordleGame
+    
+    var body: some View {
+        LazyVGrid(columns: Array(repeating: GridItem(), count: 10), alignment: .center) {
+            ForEach(Array(alphabet), id: \.self) { LetterKey(letter: $0, game: game) }
+            Spacer()
+            Spacer()
+            BackspaceKey(game: game)
+            EnterKey(game: game)
+        }
+        .padding(.horizontal)
+    }
+}
+
+
+struct LetterKey: View {
+    let letter: Character
+    @ObservedObject var game: WordleGame
+    
+    var isUsed: Bool {
+        game.usedLetters.contains(letter)
+    }
+    
+    @ViewBuilder
+    var background: some View {
+        let shape = RoundedRectangle(cornerRadius: 5)
+        
+        // NOTE: actually need to refactor this to show the best status achieved for that
+        // letter so far. I think this will require a little rethinking of the ViewModel
+        if isUsed {
+            shape.fill(.gray)
+        } else {
+            shape.strokeBorder()
+        }
+    }
+    
+    var body: some View {
+        ZStack {
+            background
+            Text(String(letter))
+        }
+        .onTapGesture {
+            game.addLetter(letter)
+        }
+    }
+}
+
+
+struct EnterKey: View {
+    var game: WordleGame
+    
+    var body: some View {
+        ZStack {
+            Text("✅")
+        }
+        .onTapGesture {
+            game.submit()
+        }
+    }
+}
+
+
+struct BackspaceKey: View {
+    var game: WordleGame
+    
+    var body: some View {
+        ZStack {
+            Text("⬅️")
+        }
+        .onTapGesture {
+            game.removeLetter()
+        }
+    }
+}
+
 
 
 // Previews
@@ -123,8 +196,6 @@ struct LetterCard: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            ContentView(game: WordleGame())
-                .preferredColorScheme(.light)
             ContentView(game: WordleGame())
                 .preferredColorScheme(.dark)
         }

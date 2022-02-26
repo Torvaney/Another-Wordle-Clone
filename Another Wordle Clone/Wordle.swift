@@ -21,7 +21,10 @@ struct Wordle {
     }
     
     init(dictionary: [String]) {
-        target = dictionary.randomElement() ?? "NIL STATE SHOULD BE IMPOSSIBLE?!"  // NOTE: make impossible states impossible
+        // NOTE: make impossible states impossible. Perhaps an empty dictionary should proceed straight to end game?
+        //       or require dictionary to be a non-empty list. Or supply dictionary and target as separate arguments?
+        // NOTE: What if we get the target using the date to create an index within the dictionary? (Maybe use date to set the seed?)
+        target = dictionary.randomElement() ?? "NIL STATE SHOULD BE IMPOSSIBLE?!"
         self.dictionary = dictionary
         
         maxGuesses = 6
@@ -39,13 +42,15 @@ struct Wordle {
     }
 
     mutating func removeLetter() {
-        currentGuess.removeLast()
+        if currentGuess.count > 0{
+            currentGuess.removeLast()
+        }
     }
     
     // NOTE: might be useful later to return some data indicating the outcome
     // of the submission (success, invalid word, &c)
     mutating func submit() {
-        if (currentGuess.count == targetLength) && (dictionary.contains(String(currentGuess))) {
+        if (currentGuess.count == targetLength) { // && (dictionary.contains(String(currentGuess))) {
             prevGuesses.append(String(currentGuess))
             currentGuess = [] 
         }

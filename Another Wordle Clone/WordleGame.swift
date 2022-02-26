@@ -8,11 +8,27 @@
 import SwiftUI
 
 
-class WordleGame {
+class WordleGame: ObservableObject {
     // NOTE: later, we will load the dictionary from somewhere
     //       could do something fun where you can select the dictionary to use when you start a new game
     // I guess the dictionary should contain some representation of word length
-    private var model: Wordle =  Wordle(dictionary: ["POWER", "CAIRN", "FUNKY", "VIVID", "DANCE"])
+    @Published private var model: Wordle =  Wordle(dictionary: ["POWER", "CAIRN", "FUNKY", "VIVID", "DANCE"])
+    
+    // MARK: Methods fowarded from model (user intents)
+    
+    func addLetter(_ letter: Character) {
+        model.addLetter(letter)
+    }
+
+    func removeLetter() {
+        model.removeLetter()
+    }
+    
+    func submit() {
+        model.submit()
+    }
+    
+    // MARK: Adding inferred metadata to guesses
     
     typealias WordGuess = [LetterGuess]
     
@@ -63,5 +79,11 @@ class WordleGame {
         case notInWord(_ letter: Character)
         case inWord(_ letter: Character)
         case inPosition(_ letter: Character)
+    }
+    
+    // MARK: Getting used letters
+    
+    var usedLetters: Set<Character> {
+        Set(model.prevGuesses.joined(separator: ""))
     }
 }
