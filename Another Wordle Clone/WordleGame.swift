@@ -12,10 +12,20 @@ class WordleGame: ObservableObject {
     // NOTE: later, we will load the dictionary from somewhere
     //       could do something fun where you can select the dictionary to use when you start a new game
     // I guess the dictionary should contain some representation of word length
-    @Published private var model: Wordle =  Wordle(dictionary: loadDictionary())
+    @Published private var model: Wordle = Wordle(dictionary: loadDictionary())
     
     
-    // MARK: Methods fowarded from model (user intents)
+    var state: Wordle.GameState {
+        model.state
+    }
+    
+    var target: String {
+        model.target
+    }
+    
+    
+    // MARK: User intents
+    // (inc. methods fowarded from model
     
     func addLetter(_ letter: Character) {
         model.addLetter(letter)
@@ -29,12 +39,8 @@ class WordleGame: ObservableObject {
         model.submit()
     }
     
-    var state: Wordle.GameState {
-        model.state
-    }
-    
-    var target: String {
-        model.target
+    func reset() {
+        model = Wordle(dictionary: WordleGame.loadDictionary())
     }
     
     

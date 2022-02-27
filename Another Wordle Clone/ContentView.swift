@@ -22,6 +22,7 @@ struct ContentView: View {
     var playing: some View {
         VStack {
             Title()
+            Text("The word is \(game.target)")
             Spacer()
             Guesses(game.guesses)
             Spacer()
@@ -32,7 +33,12 @@ struct ContentView: View {
     
     @ViewBuilder
     var won: some View {
-        Text("You won! 🎉").font(.title)
+        VStack {
+            Text("You won! 🎉").font(.title)
+            Row(guess: game.evaluateGuess(game.target, target: game.target))
+                .padding(.horizontal)
+            PlayAgainButton(game: game)
+        }
     }
     
     @ViewBuilder
@@ -40,6 +46,7 @@ struct ContentView: View {
         VStack {
             Text("You lost! 😨").font(.title)
             Text("The word was \(game.target)")
+            PlayAgainButton(game: game)
         }
     }
 }
@@ -50,6 +57,18 @@ struct Title: View {
             Text("Hello, Wordle!")
                 .font(.title)
         }
+    }
+}
+
+
+struct PlayAgainButton: View {
+    @ObservedObject var game: WordleGame
+    
+    var body: some View {
+        Button("Play again") {
+            game.reset()
+        }
+        .padding(.vertical)
     }
 }
 
