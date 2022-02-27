@@ -22,7 +22,6 @@ struct WordleGameView: View {
     private var playing: some View {
         VStack {
             Title()
-            Text("The word is \(game.target)")
             Spacer()
             Guesses(game.guesses)
             Spacer()
@@ -114,31 +113,38 @@ struct LetterCard: View {
     }
     
     var body: some View {
-        let shape = RoundedRectangle(cornerRadius: 15)
-        let outline = shape.strokeBorder(lineWidth: 2)
-        
-        switch letterGuess {
-        case .empty:
-            outline
-        case .pending(let letter):
-            ZStack {
-                outline
-                viewLetter(letter)
-            }
+        GeometryReader { geometry in
+            let shape = RoundedRectangle(cornerRadius: 15)
+            let outline = shape.strokeBorder(lineWidth: 2)
+            let letterSize = geometry.size.width * DrawingConstants.fontScale
             
-        case .submitted(let letter, let status):
-            ZStack {
-                shape.fill(statusColour(status))
+            switch letterGuess {
+            case .empty:
                 outline
-                viewLetter(letter)
+            case .pending(let letter):
+                ZStack {
+                    outline
+                    viewLetter(letter, size: letterSize)
+                }
+                
+            case .submitted(let letter, let status):
+                ZStack {
+                    shape.fill(statusColour(status))
+                    outline
+                    viewLetter(letter, size: letterSize)
+                }
             }
         }
     }
-    
-    private func viewLetter(_ letter: Character) -> some View {
+        
+    private func viewLetter(_ letter: Character, size: CGFloat) -> some View {
         Text(String(letter))
-            .bold()
-            .font(.headline)
+            .font(.system(size: size))
+            .multilineTextAlignment(.center)
+    }
+    
+    private struct DrawingConstants {
+        static let fontScale: CGFloat = 0.8
     }
 }
 
@@ -161,6 +167,7 @@ struct Keyboard: View {
 
 
 struct LetterKey: View {
+    // NOTE: should probably do some refactoring so that this just re-uses LetterCard
     let letter: Character
     @ObservedObject var game: WordleGame
     
@@ -235,8 +242,9 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             WordleGameView(game: WordleGame())
-                .preferredColorScheme(.dark)
+                .preferredColorScheme(.light)
         }
     }
 }
 
+    
