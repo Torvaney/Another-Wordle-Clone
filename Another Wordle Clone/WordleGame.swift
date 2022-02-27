@@ -101,7 +101,7 @@ class WordleGame: ObservableObject {
              switch (lhs, rhs) {
              case (.notInWord, _):
                  return true
-             case (.inWord, .inPosition):
+             case (_, .inPosition):
                  return true
              default:
                  return false
@@ -128,7 +128,7 @@ class WordleGame: ObservableObject {
                 }
             }
         
-        return Dictionary(letterGuesses, uniquingKeysWith: min)
+        return Dictionary(letterGuesses, uniquingKeysWith: max)
     }
     
     
