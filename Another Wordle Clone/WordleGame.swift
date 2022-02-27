@@ -12,7 +12,7 @@ class WordleGame: ObservableObject {
     // NOTE: later, we will load the dictionary from somewhere
     //       could do something fun where you can select the dictionary to use when you start a new game
     // I guess the dictionary should contain some representation of word length
-    @Published private var model: Wordle =  Wordle(dictionary: ["POWER", "CAIRN", "FUNKY", "VIVID", "DANCE"])
+    @Published private var model: Wordle =  Wordle(dictionary: loadDictionary())
     
     
     // MARK: Methods fowarded from model (user intents)
@@ -27,6 +27,14 @@ class WordleGame: ObservableObject {
     
     func submit() {
         model.submit()
+    }
+    
+    var state: Wordle.GameState {
+        model.state
+    }
+    
+    var target: String {
+        model.target
     }
     
     
@@ -54,6 +62,10 @@ class WordleGame: ObservableObject {
     }
     
     func evaluateGuess(_ guess: String, target: String) -> WordGuess {
+        // Alternative idea:
+        // Break word & target into [(Letter, Index)] (i.e. zip(word, 0..))
+        // For each (Letter, Index) in target, find first, best match in word (that hasn't already been matched)?
+        
         zip(guess, target).map { (guessLetter, targetLetter) -> LetterGuess in
             LetterGuess.submitted(guessLetter, status: evaluateLetter(guessLetter, targetLetter, target))
         }
@@ -117,5 +129,26 @@ class WordleGame: ObservableObject {
             }
         
         return Dictionary(letterGuesses, uniquingKeysWith: min)
+    }
+    
+    
+    // MARK: Dictionary (Temp?)
+    
+    static func loadDictionary() -> [String] {
+        if let dictionaryFilepath = Bundle.main.path(forResource: "DefaultDictionary", ofType: "txt") {
+            do {
+                let wordList = try String(contentsOfFile: dictionaryFilepath)
+                return wordList
+                    .split(whereSeparator: \.isNewline)
+                    .map { String($0).uppercased() }
+            } catch {
+                // File can't be loaded!
+                // TODO: handle the failure cases with an optional instead
+                return []
+            }
+        } else {
+            // File not found!
+            return []
+        }
     }
 }

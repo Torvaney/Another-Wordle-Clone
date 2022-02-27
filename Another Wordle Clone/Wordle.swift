@@ -20,6 +20,16 @@ struct Wordle {
         target.count
     }
     
+    var state: GameState {
+        if prevGuesses.count > 0 && prevGuesses.allSatisfy({ $0 == target }) {
+            return .won
+        } else if prevGuesses.count == maxGuesses {
+            return .lost
+        } else {
+            return .playing
+        }
+    }
+    
     init(dictionary: [String]) {
         // NOTE: make impossible states impossible. Perhaps an empty dictionary should proceed straight to end game?
         //       or require dictionary to be a non-empty list. Or supply dictionary and target as separate arguments?
@@ -42,7 +52,7 @@ struct Wordle {
     }
 
     mutating func removeLetter() {
-        if currentGuess.count > 0{
+        if currentGuess.count > 0 {
             currentGuess.removeLast()
         }
     }
@@ -50,11 +60,15 @@ struct Wordle {
     // NOTE: might be useful later to return some data indicating the outcome
     // of the submission (success, invalid word, &c)
     mutating func submit() {
-        if (currentGuess.count == targetLength) { // && (dictionary.contains(String(currentGuess))) {
+        if (currentGuess.count == targetLength) && (dictionary.contains(String(currentGuess))) {
             prevGuesses.append(String(currentGuess))
             currentGuess = [] 
         }
+    }
         
-        // NOTE: need some end-of-game handling if maxGuesses is reached
+    enum GameState {
+        case playing
+        case won
+        case lost
     }
 }

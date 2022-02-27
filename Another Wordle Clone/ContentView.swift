@@ -11,6 +11,15 @@ struct ContentView: View {
     @ObservedObject var game: WordleGame
     
     var body: some View {
+        switch game.state {
+        case .playing: playing
+        case .won: won
+        case .lost: lost
+        }
+    }
+    
+    @ViewBuilder
+    var playing: some View {
         VStack {
             Title()
             Spacer()
@@ -19,6 +28,19 @@ struct ContentView: View {
             Keyboard(game: game)
             Spacer()
         }.padding(.vertical)
+    }
+    
+    @ViewBuilder
+    var won: some View {
+        Text("You won!")
+    }
+    
+    @ViewBuilder
+    var lost: some View {
+        VStack {
+            Text("You lost :(")
+            Text("The word was \(game.target)")
+        }
     }
 }
 
@@ -127,11 +149,10 @@ struct LetterKey: View {
     var background: some View {
         let shape = RoundedRectangle(cornerRadius: 5)
         
-        switch game.guessedLetters[letter] {
-        case nil:
-            shape.strokeBorder()
-        case .some(let status):
+        if let status = game.guessedLetters[letter] {
             shape.fill(statusColour(status))
+            shape.strokeBorder()
+        } else {
             shape.strokeBorder()
         }
     }
