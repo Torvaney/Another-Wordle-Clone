@@ -32,13 +32,13 @@ struct ContentView: View {
     
     @ViewBuilder
     var won: some View {
-        Text("You won!")
+        Text("You won! 🎉").font(.title)
     }
     
     @ViewBuilder
     var lost: some View {
         VStack {
-            Text("You lost :(")
+            Text("You lost! 😨").font(.title)
             Text("The word was \(game.target)")
         }
     }
@@ -125,8 +125,8 @@ struct LetterCard: View {
 
 
 struct Keyboard: View {
-    let alphabet = "QWERTYUIOPASDFGHJKLZXCVBNM"
     @ObservedObject var game: WordleGame
+    let alphabet = "QWERTYUIOPASDFGHJKLZXCVBNM"
     
     var body: some View {
         LazyVGrid(columns: Array(repeating: GridItem(), count: 10), alignment: .center) {
