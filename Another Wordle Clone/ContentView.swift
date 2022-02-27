@@ -19,7 +19,7 @@ struct ContentView: View {
     }
     
     @ViewBuilder
-    var playing: some View {
+    private var playing: some View {
         VStack {
             Title()
             Text("The word is \(game.target)")
@@ -32,7 +32,7 @@ struct ContentView: View {
     }
     
     @ViewBuilder
-    var won: some View {
+    private var won: some View {
         VStack {
             Text("You won! 🎉").font(.title)
             Row(guess: game.evaluateGuess(game.target, target: game.target))
@@ -42,7 +42,7 @@ struct ContentView: View {
     }
     
     @ViewBuilder
-    var lost: some View {
+    private var lost: some View {
         VStack {
             Text("You lost! 😨").font(.title)
             Text("The word was \(game.target)")
@@ -74,7 +74,7 @@ struct PlayAgainButton: View {
 
 
 struct Guesses: View {
-    let guesses: [WordleGame.WordGuess]
+    private let guesses: [WordleGame.WordGuess]
     
     init(_ guesses: [WordleGame.WordGuess]) {
         self.guesses = guesses
@@ -107,7 +107,7 @@ struct Row: View {
 
 
 struct LetterCard: View {
-    var letterGuess: WordleGame.LetterGuess
+    private var letterGuess: WordleGame.LetterGuess
     
     init(_ letterGuess: WordleGame.LetterGuess) {
         self.letterGuess = letterGuess
@@ -135,7 +135,7 @@ struct LetterCard: View {
         }
     }
     
-    func viewLetter(_ letter: Character) -> some View {
+    private func viewLetter(_ letter: Character) -> some View {
         Text(String(letter))
             .bold()
             .font(.headline)
@@ -145,7 +145,7 @@ struct LetterCard: View {
 
 struct Keyboard: View {
     @ObservedObject var game: WordleGame
-    let alphabet = "QWERTYUIOPASDFGHJKLZXCVBNM"
+    private let alphabet = "QWERTYUIOPASDFGHJKLZXCVBNM"
     
     var body: some View {
         LazyVGrid(columns: Array(repeating: GridItem(), count: 10), alignment: .center) {

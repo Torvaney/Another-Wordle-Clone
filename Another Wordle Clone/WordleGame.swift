@@ -77,7 +77,7 @@ class WordleGame: ObservableObject {
         }
     }
             
-    func evaluateLetter(_ guessLetter: Character, _ targetLetter: Character, _ target: String) -> GuessStatus {
+    private func evaluateLetter(_ guessLetter: Character, _ targetLetter: Character, _ target: String) -> GuessStatus {
         if (guessLetter == targetLetter) {
             return .inPosition
         }
@@ -103,6 +103,9 @@ class WordleGame: ObservableObject {
         case inWord
         case inPosition
         
+        // We have implemented a basic ordering of statuses
+        // so that we can easily find the highest priority one
+        // for informing the player of their "best guess so far" for each letter
         static func < (lhs: Self, rhs: Self) -> Bool {
              switch (lhs, rhs) {
              case (.notInWord, _):
@@ -117,10 +120,6 @@ class WordleGame: ObservableObject {
     
     
     // MARK: Getting used letters
-    
-    var usedLetters: Set<Character> {
-        Set(model.prevGuesses.joined(separator: ""))
-    }
     
     var guessedLetters: Dictionary<Character, GuessStatus> {
         let letterGuesses: [(Character, GuessStatus)] = prevGuesses
@@ -140,7 +139,7 @@ class WordleGame: ObservableObject {
     
     // MARK: Dictionary (Temp?)
     
-    static func loadDictionary() -> [String] {
+    private static func loadDictionary() -> [String] {
         if let dictionaryFilepath = Bundle.main.path(forResource: "DefaultDictionary", ofType: "txt") {
             do {
                 let wordList = try String(contentsOfFile: dictionaryFilepath)
