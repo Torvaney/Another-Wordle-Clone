@@ -21,7 +21,7 @@ struct Wordle {
     }
     
     var state: GameState {
-        if prevGuesses.count > 0 && prevGuesses.allSatisfy({ $0 == target }) {
+        if prevGuesses.count > 0 && prevGuesses.contains(target) {
             return .won
         } else if prevGuesses.count == maxGuesses {
             return .lost
