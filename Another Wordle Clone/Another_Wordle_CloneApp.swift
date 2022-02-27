@@ -13,7 +13,7 @@ struct Another_Wordle_CloneApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView(game: game)
+            WordleGameView(game: game)
         }
     }
 }

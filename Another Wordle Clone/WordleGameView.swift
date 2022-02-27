@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct WordleGameView: View {
     @ObservedObject var game: WordleGame
     
     var body: some View {
@@ -234,7 +234,7 @@ func statusColour(_ status: WordleGame.GuessStatus) -> Color {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            ContentView(game: WordleGame())
+            WordleGameView(game: WordleGame())
                 .preferredColorScheme(.dark)
         }
     }

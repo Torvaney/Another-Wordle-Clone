@@ -11,7 +11,7 @@
 		B5CD31C027CA5BD000843D04 /* WordleGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5CD31BF27CA5BD000843D04 /* WordleGame.swift */; };
 		B5CD31C427CBC1EC00843D04 /* DefaultDictionary.txt in Resources */ = {isa = PBXBuildFile; fileRef = B5CD31C327CBC1EC00843D04 /* DefaultDictionary.txt */; };
 		B5E0423527C6D57A00F83EFC /* Another_Wordle_CloneApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E0423427C6D57A00F83EFC /* Another_Wordle_CloneApp.swift */; };
-		B5E0423727C6D57A00F83EFC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E0423627C6D57A00F83EFC /* ContentView.swift */; };
+		B5E0423727C6D57A00F83EFC /* WordleGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E0423627C6D57A00F83EFC /* WordleGameView.swift */; };
 		B5E0423927C6D57D00F83EFC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B5E0423827C6D57D00F83EFC /* Assets.xcassets */; };
 		B5E0423C27C6D57D00F83EFC /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B5E0423B27C6D57D00F83EFC /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
@@ -22,7 +22,7 @@
 		B5CD31C327CBC1EC00843D04 /* DefaultDictionary.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = DefaultDictionary.txt; sourceTree = "<group>"; };
 		B5E0423127C6D57A00F83EFC /* Another Wordle Clone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Another Wordle Clone.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5E0423427C6D57A00F83EFC /* Another_Wordle_CloneApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Another_Wordle_CloneApp.swift; sourceTree = "<group>"; };
-		B5E0423627C6D57A00F83EFC /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		B5E0423627C6D57A00F83EFC /* WordleGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordleGameView.swift; sourceTree = "<group>"; };
 		B5E0423827C6D57D00F83EFC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B5E0423B27C6D57D00F83EFC /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -58,7 +58,7 @@
 			isa = PBXGroup;
 			children = (
 				B5E0423427C6D57A00F83EFC /* Another_Wordle_CloneApp.swift */,
-				B5E0423627C6D57A00F83EFC /* ContentView.swift */,
+				B5E0423627C6D57A00F83EFC /* WordleGameView.swift */,
 				B5E0423827C6D57D00F83EFC /* Assets.xcassets */,
 				B5E0423A27C6D57D00F83EFC /* Preview Content */,
 				B5CD31BD27CA590F00843D04 /* Wordle.swift */,
@@ -148,7 +148,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B5CD31BE27CA590F00843D04 /* Wordle.swift in Sources */,
-				B5E0423727C6D57A00F83EFC /* ContentView.swift in Sources */,
+				B5E0423727C6D57A00F83EFC /* WordleGameView.swift in Sources */,
 				B5CD31C027CA5BD000843D04 /* WordleGame.swift in Sources */,
 				B5E0423527C6D57A00F83EFC /* Another_Wordle_CloneApp.swift in Sources */,
 			);
