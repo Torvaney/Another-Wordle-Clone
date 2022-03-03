@@ -68,25 +68,69 @@ class WordleGame: ObservableObject {
     }
     
     func evaluateGuess(_ guess: String, target: String) -> WordGuess {
-        // Alternative idea:
-        // Break word & target into [(Letter, Index)] (i.e. zip(word, 0..))
-        // For each (Letter, Index) in target, find first, best match in word (that hasn't already been matched)?
+        // We need to get the status of each letter in the guessed word.
+
+        // Each letter should indicate the status of only one letter within the
+        // target word. In case of repeated letters in the guess word, the most correct
+        // letter should take precedence. If all letters in the guessed word are
+        // equally correct, then the first letter should equal precedence.
+        // For example, if the target is ABLED and the guess is ALLOY, then
+        // the second L should be .inPosition and the first L should be .notInWord.
+        // This indicates to the player that there is only one L in the target word.
         
-        zip(guess, target).map { (guessLetter, targetLetter) -> LetterGuess in
-            LetterGuess.submitted(guessLetter, status: evaluateLetter(guessLetter, targetLetter, target))
-        }
-    }
+        // If multiple letters appear in both guess and target letters, then the same
+        // logic applies. For example, if the target is ALOOF and the guess is BOOST, then
+        // the second O is evaluated as .inPosition and the first O is .inWord
+        
+        // To achieve this, we first break word & target into [(Letter, Index)]
+        // Then, for each target letter we pair off the first, best matching letter
+        // Any unpaired letters are `.notInWord`
+
+        let guessIndexed: [(Character, Int)] = Array(zip(guess, 0..<guess.count))
+        let targetIndexed: [(Character, Int)] = Array(zip(target, 0..<guess.count))
+        
+        let (allMatched, allRemaining): ([(LetterGuess, Int)], [(Character, Int)]) = targetIndexed.reduce(([], guessIndexed), { x, y in
+            let (matched, remaining) = x
+            let (letter, index) = y
             
-    private func evaluateLetter(_ guessLetter: Character, _ targetLetter: Character, _ target: String) -> GuessStatus {
-        if (guessLetter == targetLetter) {
-            return .inPosition
-        }
-        else if target.contains(guessLetter) {
-            return .inWord
-        }
-        else {
-            return .notInWord
-        }
+            // Get the first, best match for the target letter
+            if let firstBestMatch = findFirstBestMatch(letter, index, remaining) {
+                // If there is a match, remove letter from the remaining letters and add to
+                // the matched list
+                return (matched + [firstBestMatch], remaining.filter { (_, ix) in ix != firstBestMatch.1 })
+            } else {
+                // If there is no match, return the pair unchanged
+                return (matched, remaining)
+            }
+        })
+        
+        return (allMatched + allRemaining.map { (.submitted($0, status: .notInWord), $1) })
+            .sorted { $0.1 < $1.1 }
+            .map { $0.0 }
+    }
+    
+    private func findFirstBestMatch(_ letter: Character, _ index: Int, _ remaining: [(Character, Int)]) -> (WordleGame.LetterGuess, Int)? {
+        remaining
+            // First, check whether any guessed letters are a match
+            .map {
+                if $0.0 == letter && $0.1 == index  {
+                    return (.inPosition, $0.1)
+                } else if $0.0 == letter {
+                    return (.inWord, $0.1)
+                } else {
+                    return (.notInWord, $0.1)
+                }
+            }
+            .filter { $0.0.isInWord() }
+            // Then, find the first, best matching letter
+            .max {
+                if $0.0 == $1.0 {
+                    return $0.1 >= $1.1
+                } else {
+                    return $0.0 < $1.0
+                }
+            }
+            .map { (.submitted(letter, status: $0), $1) }
     }
     
     enum LetterGuess: Hashable {
@@ -116,6 +160,15 @@ class WordleGame: ObservableObject {
                  return false
              }
          }
+        
+        func isInWord() -> Bool {
+            switch self {
+            case .notInWord:
+                return false
+            default:
+                return true
+            }
+        }
     }
     
     
