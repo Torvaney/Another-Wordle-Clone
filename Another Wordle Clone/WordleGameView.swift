@@ -106,7 +106,7 @@ struct Row: View {
 
 
 struct LetterCard: View {
-    private var letterGuess: WordleGame.LetterGuess
+    private let letterGuess: WordleGame.LetterGuess
     
     init(_ letterGuess: WordleGame.LetterGuess) {
         self.letterGuess = letterGuess
@@ -155,7 +155,9 @@ struct Keyboard: View {
     
     var body: some View {
         LazyVGrid(columns: Array(repeating: GridItem(), count: 10), alignment: .center) {
-            ForEach(Array(alphabet), id: \.self) { LetterKey(letter: $0, game: game) }
+            ForEach(Array(alphabet), id: \.self) { letter in
+                LetterCard(getLetterStatus(letter))
+            }
             Spacer()
             Spacer()
             BackspaceKey(game: game)
@@ -163,6 +165,14 @@ struct Keyboard: View {
         }
         .padding(.horizontal)
     }
+                           
+    func getLetterStatus(_ letter: Character) -> WordleGame.LetterGuess {
+       if let status = game.guessedLetters[letter] {
+           return WordleGame.LetterGuess.submitted(letter, status: status)
+       } else {
+           return WordleGame.LetterGuess.pending(letter)
+       }
+   }
 }
 
 
