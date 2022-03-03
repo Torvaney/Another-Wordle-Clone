@@ -23,6 +23,7 @@ struct WordleGameView: View {
         VStack {
             Title()
             Spacer()
+            Text("The word is \(game.target)")
             Guesses(game.guesses)
             Spacer()
             Keyboard(game: game)
@@ -90,7 +91,7 @@ struct Guesses: View {
 
 
 struct Row: View {
-    var guess: WordleGame.WordGuess
+    let guess: WordleGame.WordGuess
     
     var body: some View {
         HStack {
@@ -106,7 +107,7 @@ struct Row: View {
 
 
 struct LetterCard: View {
-    private var letterGuess: WordleGame.LetterGuess
+    private let letterGuess: WordleGame.LetterGuess
     
     init(_ letterGuess: WordleGame.LetterGuess) {
         self.letterGuess = letterGuess
@@ -167,7 +168,6 @@ struct Keyboard: View {
 
 
 struct LetterKey: View {
-    // NOTE: should probably do some refactoring so that this just re-uses LetterCard
     let letter: Character
     @ObservedObject var game: WordleGame
     
