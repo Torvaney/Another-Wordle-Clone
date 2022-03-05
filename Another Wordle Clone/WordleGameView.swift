@@ -233,10 +233,20 @@ func statusColour(_ status: WordleGame.GuessStatus) -> Color {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        Group {
-            WordleGameView(game: WordleGame())
-                .preferredColorScheme(.light)
-        }
+        let game = WordleGame()
+        
+        game.addLetter("P")
+        game.addLetter("O")
+        game.addLetter("W")
+        game.addLetter("E")
+        game.addLetter("R")
+        game.submit()
+        
+        game.addLetter("A")
+        game.addLetter("A")
+        
+        return WordleGameView(game: game)
+                    .preferredColorScheme(.light)
     }
 }
 
