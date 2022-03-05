@@ -118,6 +118,10 @@ struct LetterCard: View {
             case .pending(let letter):
                 ZStack {
                     outline
+                    DoubleU(angle: Angle(degrees: 30), scale: 0.5)
+                        .stroke(.red, style: StrokeStyle(lineWidth: 5, lineCap: .round))
+                        .padding(DrawingConstants.doubleUPadding)
+                        .opacity(DrawingConstants.doubleUOpacity)
                     viewLetter(letter, size: letterSize)
                 }
                 
@@ -139,6 +143,10 @@ struct LetterCard: View {
     
     private struct DrawingConstants {
         static let fontScale: CGFloat = 0.8
+        
+        // Circle constants
+        static let doubleUPadding: CGFloat = 5
+        static let doubleUOpacity: CGFloat = 0.7
     }
 }
 

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B568D7FC27D3F73200318C19 /* DoubleU.swift in Sources */ = {isa = PBXBuildFile; fileRef = B568D7FB27D3F73200318C19 /* DoubleU.swift */; };
 		B5CD31BE27CA590F00843D04 /* Wordle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5CD31BD27CA590F00843D04 /* Wordle.swift */; };
 		B5CD31C027CA5BD000843D04 /* WordleGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5CD31BF27CA5BD000843D04 /* WordleGame.swift */; };
 		B5CD31C427CBC1EC00843D04 /* DefaultDictionary.txt in Resources */ = {isa = PBXBuildFile; fileRef = B5CD31C327CBC1EC00843D04 /* DefaultDictionary.txt */; };
@@ -17,6 +18,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B568D7FB27D3F73200318C19 /* DoubleU.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoubleU.swift; sourceTree = "<group>"; };
 		B5CD31BD27CA590F00843D04 /* Wordle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wordle.swift; sourceTree = "<group>"; };
 		B5CD31BF27CA5BD000843D04 /* WordleGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordleGame.swift; sourceTree = "<group>"; };
 		B5CD31C327CBC1EC00843D04 /* DefaultDictionary.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = DefaultDictionary.txt; sourceTree = "<group>"; };
@@ -57,6 +59,7 @@
 		B5E0423327C6D57A00F83EFC /* Another Wordle Clone */ = {
 			isa = PBXGroup;
 			children = (
+				B568D7FB27D3F73200318C19 /* DoubleU.swift */,
 				B5E0423427C6D57A00F83EFC /* Another_Wordle_CloneApp.swift */,
 				B5E0423627C6D57A00F83EFC /* WordleGameView.swift */,
 				B5E0423827C6D57D00F83EFC /* Assets.xcassets */,
@@ -147,6 +150,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B568D7FC27D3F73200318C19 /* DoubleU.swift in Sources */,
 				B5CD31BE27CA590F00843D04 /* Wordle.swift in Sources */,
 				B5E0423727C6D57A00F83EFC /* WordleGameView.swift in Sources */,
 				B5CD31C027CA5BD000843D04 /* WordleGame.swift in Sources */,
