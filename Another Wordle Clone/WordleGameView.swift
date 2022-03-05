@@ -82,9 +82,7 @@ struct Guesses: View {
     
     var body: some View {
         VStack {
-            ForEach(guesses, id: \.self) { guess in
-                Row(guess: guess)
-            }
+            ForEach(guesses, id: \.self) { Row(guess: $0) }
         }.padding(.horizontal)
     }
 }
@@ -95,12 +93,7 @@ struct Row: View {
     
     var body: some View {
         HStack {
-            ForEach(0..<5) { ix in
-                // TODO: need a permanent fix for this. Maybe WordGuess should just be a hashable struct?
-                let letterGuess = guess[ix]
-                LetterCard(letterGuess)
-                    .aspectRatio(1, contentMode: .fit)
-            }
+            ForEach(guess) { LetterCard($0).aspectRatio(1, contentMode: .fit) }
         }
     }
 }

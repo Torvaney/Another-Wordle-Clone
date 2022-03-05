@@ -133,13 +133,29 @@ class WordleGame: ObservableObject {
             .map { (.submitted(letter, status: $0), $1) }
     }
     
-    enum LetterGuess: Hashable {
+    enum LetterGuess: Identifiable, Hashable {
         // Current guess (and future guesses)
         case empty
         case pending(_ letter: Character)
         
         // Submitted guesses
         case submitted(_ letter: Character, status: GuessStatus)
+        
+        // Conform to Identifiable
+        // Although... I'm not sure this is actually correct...
+        // Shouldn't a letter guess be identified by the Guess # and the letter index?
+        // i.e. the position on the grid?
+        // I think this is fine for now, but may cause issues with animations, later.
+        internal var id: String {
+            switch self {
+            case .empty:
+                return "empty"
+            case .pending(let letter):
+                return "pending-\(letter)"
+            case .submitted(let letter, status: let status):
+                return "submitted-\(letter)-\(status)"
+            }
+        }
     }
     
     enum GuessStatus: Comparable {
