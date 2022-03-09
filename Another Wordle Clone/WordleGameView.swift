@@ -54,6 +54,10 @@ struct WordleGameView: View {
             Text("The word was \(game.target)")
             PlayAgainButton(game: game)
         }
+        .transition(.asymmetric(
+            insertion: .scale.combined(with: .opacity).animation(.spring()),
+            removal: .opacity.animation(.linear(duration: 0.1))
+        ))
     }
 }
 
