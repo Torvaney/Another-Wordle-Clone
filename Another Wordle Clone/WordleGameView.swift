@@ -28,17 +28,23 @@ struct WordleGameView: View {
             Spacer()
             Keyboard(game: game)
             Spacer()
-        }.padding(.vertical)
+        }
+        .padding(.vertical)
     }
     
     @ViewBuilder
     private var won: some View {
         VStack {
-            Text("You won! 🎉").font(.title)
+            Text("You won! 🎉")
+                .font(.title)
             Row(guess: game.evaluateGuess(game.target, target: game.target))
                 .padding(.horizontal)
             PlayAgainButton(game: game)
         }
+        .transition(.asymmetric(
+            insertion: .scale.combined(with: .opacity).animation(.spring()),
+            removal: .opacity.animation(.linear(duration: 0.1))
+        ))
     }
     
     @ViewBuilder
@@ -243,7 +249,7 @@ struct ContentView_Previews: PreviewProvider {
         game.submit()
         
         game.addLetter("A")
-        game.addLetter("A")
+        game.addLetter("B")
         
         return WordleGameView(game: game)
                     .preferredColorScheme(.light)
