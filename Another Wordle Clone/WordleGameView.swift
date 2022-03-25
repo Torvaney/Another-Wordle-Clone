@@ -23,7 +23,7 @@ struct WordleGameView: View {
         VStack {
             Title()
             Spacer()
-            Text("The word is \(game.target)")
+            // Text("The word is \(game.target)")
             Guesses(game.guesses)
             Spacer()
             Keyboard(game: game)
@@ -192,7 +192,9 @@ struct LetterKey: View {
             Text(String(letter))
         }
         .onTapGesture {
-            game.addLetter(letter)
+            withAnimation(.easeIn(duration: 0.1)) {
+                game.addLetter(letter)
+            }
         }
     }
 }
@@ -206,7 +208,9 @@ struct EnterKey: View {
             Text("✅")
         }
         .onTapGesture {
-            game.submit()
+            withAnimation(.easeIn(duration: 2)) {
+                game.submit()
+            }
         }
     }
 }
@@ -220,7 +224,10 @@ struct BackspaceKey: View {
             Text("⬅️")
         }
         .onTapGesture {
-            game.removeLetter()
+            withAnimation(.easeIn(duration: 0.1)) {
+                // TODO: When the final letter is deleted the whole row is animated - why? how can we change this?
+                game.removeLetter()
+            }
         }
     }
 }
