@@ -145,17 +145,7 @@ class WordleGame: ObservableObject {
         // Although... I'm not sure this is actually correct...
         // Shouldn't a letter guess be identified by the Guess # and the letter index?
         // i.e. the position on the grid?
-        // I think this is fine for now, but may cause issues with animations, later.
-        internal var id: String {
-            switch self {
-            case .empty:
-                return "empty"
-            case .pending(let letter):
-                return "pending-\(letter)"
-            case .submitted(let letter, status: let status):
-                return "submitted-\(letter)-\(status)"
-            }
-        }
+        internal var id: UUID { UUID() }
     }
     
     enum GuessStatus: Comparable {

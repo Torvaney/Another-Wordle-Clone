@@ -115,12 +115,14 @@ struct LetterCard: View {
     init(_ letterGuess: WordleGame.LetterGuess) {
         self.letterGuess = letterGuess
     }
+
+    @State private var rotation: Double = 0  // in Degrees
     
     var body: some View {
         GeometryReader { geometry in
-            let shape = RoundedRectangle(cornerRadius: 15)
-            let outline = shape.strokeBorder(lineWidth: 2)
-            let letterSize = geometry.size.width * DrawingConstants.fontScale
+            let shape = RoundedRectangle(cornerRadius: LetterCardConstants.cornerRadius)
+            let outline = shape.strokeBorder(lineWidth: LetterCardConstants.strokeWidth)
+            let letterSize = geometry.size.width * LetterCardConstants.fontScale
             
             switch letterGuess {
             case .empty:
@@ -134,8 +136,16 @@ struct LetterCard: View {
             case .submitted(let letter, let status):
                 ZStack {
                     shape.fill(statusColour(status))
-                    outline
                     viewLetter(letter, size: letterSize)
+                    outline
+                    
+                }
+                .rotation3DEffect(.degrees(rotation), axis: (1, 0, 0))
+                .onAppear {
+                    self.rotation = 90
+                    withAnimation(.linear(duration: LetterCardConstants.flipDuration)) {
+                        self.rotation = 0
+                    }
                 }
             }
         }
@@ -147,8 +157,11 @@ struct LetterCard: View {
             .multilineTextAlignment(.center)
     }
     
-    private struct DrawingConstants {
+    private struct LetterCardConstants {
+        static let cornerRadius: CGFloat = 15
+        static let strokeWidth: CGFloat = 2
         static let fontScale: CGFloat = 0.8
+        static let flipDuration: Double = 0.15
     }
 }
 
@@ -208,9 +221,9 @@ struct EnterKey: View {
             Text("✅")
         }
         .onTapGesture {
-            withAnimation(.easeIn(duration: 2)) {
+//            withAnimation(.easeIn(duration: 1)) {
                 game.submit()
-            }
+//            }
         }
     }
 }
