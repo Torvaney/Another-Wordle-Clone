@@ -66,6 +66,7 @@ struct Title: View {
         VStack {
             Text("Hello, Wordle!")
                 .font(.title)
+                .bold()
         }
     }
 }
@@ -116,7 +117,9 @@ struct LetterCard: View {
         self.letterGuess = letterGuess
     }
 
+    // Manage animations
     @State private var rotation: Double = 0  // in Degrees
+    @State private var scale: Double = 1.0
     
     var body: some View {
         GeometryReader { geometry in
@@ -125,20 +128,26 @@ struct LetterCard: View {
             let letterSize = geometry.size.width * LetterCardConstants.fontScale
             
             switch letterGuess {
+                
             case .empty:
-                outline
+                outline.opacity(LetterCardConstants.emptyOpacity)
+                
             case .pending(let letter):
                 ZStack {
-                    outline
-                    viewLetter(letter, size: letterSize)
+                    outline.scaleEffect(scale)
+                    viewLetter(letter, size: letterSize, color: .primary)
+                }
+                .onAppear {
+                    self.scale = 1.1
+                    withAnimation(.linear(duration: LetterCardConstants.bounceDuration)) {
+                        self.scale = 1.0
+                    }
                 }
                 
             case .submitted(let letter, let status):
                 ZStack {
                     shape.fill(statusColour(status))
-                    viewLetter(letter, size: letterSize)
-                    outline
-                    
+                    viewLetter(letter, size: letterSize, color: .white)
                 }
                 .rotation3DEffect(.degrees(rotation), axis: (1, 0, 0))
                 .onAppear {
@@ -151,17 +160,21 @@ struct LetterCard: View {
         }
     }
         
-    private func viewLetter(_ letter: Character, size: CGFloat) -> some View {
+    private func viewLetter(_ letter: Character, size: CGFloat, color: Color) -> some View {
         Text(String(letter))
             .font(.system(size: size))
+            .foregroundColor(color)
+            .bold()
             .multilineTextAlignment(.center)
     }
     
     private struct LetterCardConstants {
-        static let cornerRadius: CGFloat = 15
+        static let cornerRadius: CGFloat = 0
         static let strokeWidth: CGFloat = 2
-        static let fontScale: CGFloat = 0.8
+        static let fontScale: CGFloat = 0.6
+        static let emptyOpacity: Double = 0.6
         static let flipDuration: Double = 0.15
+        static let bounceDuration: Double = 0.15
     }
 }
 
@@ -189,25 +202,36 @@ struct LetterKey: View {
     
     @ViewBuilder
     var background: some View {
-        let shape = RoundedRectangle(cornerRadius: 5)
+        let shape = RoundedRectangle(cornerRadius: 3)
         
         if let status = game.guessedLetters[letter] {
-            shape.fill(statusColour(status))
-            shape.strokeBorder()
+            shape
+                .fill(statusColour(status))
         } else {
-            shape.strokeBorder()
+            shape
+                .fill(.secondary)
+                .opacity(0.35)
+        }
+    }
+    
+    var textColor: Color {
+        if let _ = game.guessedLetters[letter] {
+            return .white
+        } else {
+            return .primary
         }
     }
     
     var body: some View {
         ZStack {
             background
+                .transition(.opacity.animation(.easeIn))
             Text(String(letter))
+                .foregroundColor(textColor)
         }
+        .aspectRatio(3/4, contentMode: .fit)
         .onTapGesture {
-            withAnimation(.easeIn(duration: 0.1)) {
-                game.addLetter(letter)
-            }
+            game.addLetter(letter)
         }
     }
 }
@@ -221,9 +245,10 @@ struct EnterKey: View {
             Text("✅")
         }
         .onTapGesture {
-//            withAnimation(.easeIn(duration: 1)) {
-                game.submit()
-//            }
+            // NOTE: Submission animations are handled using onAppear.
+            //       This seems like poor practice?
+            //       But not sure how to get it it work as desired otherwise...
+            game.submit()
         }
     }
 }
@@ -237,10 +262,7 @@ struct BackspaceKey: View {
             Text("⬅️")
         }
         .onTapGesture {
-            withAnimation(.easeIn(duration: 0.1)) {
-                // TODO: When the final letter is deleted the whole row is animated - why? how can we change this?
-                game.removeLetter()
-            }
+            game.removeLetter()
         }
     }
 }
