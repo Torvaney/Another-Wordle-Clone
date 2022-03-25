@@ -23,11 +23,9 @@ struct WordleGameView: View {
         VStack {
             Title()
             Spacer()
-            // Text("The word is \(game.target)")
             Guesses(game.guesses)
             Spacer()
             Keyboard(game: game)
-            Spacer()
         }
         .padding(.vertical)
     }
@@ -287,18 +285,19 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         let game = WordleGame()
         
-        game.addLetter("P")
-        game.addLetter("O")
-        game.addLetter("W")
-        game.addLetter("E")
-        game.addLetter("R")
-        game.submit()
-        
-        game.addLetter("A")
-        game.addLetter("B")
+//        game.addLetter("P")
+//        game.addLetter("O")
+//        game.addLetter("W")
+//        game.addLetter("E")
+//        game.addLetter("R")
+//        game.submit()
+//
+//        game.addLetter("A")
+//        game.addLetter("B")
         
         return WordleGameView(game: game)
                     .preferredColorScheme(.light)
+                    .previewInterfaceOrientation(.landscapeLeft)
     }
 }
 
