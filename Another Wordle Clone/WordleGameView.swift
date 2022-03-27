@@ -239,9 +239,15 @@ struct EnterKey: View {
     var game: WordleGame
     
     var body: some View {
+        let shape = RoundedRectangle(cornerRadius: 3)
+        
         ZStack {
-            Text("✅")
+            shape
+                .fill(.secondary)
+                .opacity(0.35)
+            Image(systemName: "return")
         }
+        .aspectRatio(3/4, contentMode: .fit)
         .onTapGesture {
             // NOTE: Submission animations are handled using onAppear.
             //       This seems like poor practice?
@@ -256,9 +262,15 @@ struct BackspaceKey: View {
     var game: WordleGame
     
     var body: some View {
+        let shape = RoundedRectangle(cornerRadius: 3)
+        
         ZStack {
-            Text("⬅️")
+            shape
+                .fill(.secondary)
+                .opacity(0.35)
+            Image(systemName: "delete.backward")
         }
+        .aspectRatio(3/4, contentMode: .fit)
         .onTapGesture {
             game.removeLetter()
         }
