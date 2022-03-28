@@ -18,26 +18,16 @@ struct WordleGameView: View {
         }
     }
     
-    @ViewBuilder
-    private var playing: some View {
-        VStack {
-            Title()
-            Spacer()
-            Guesses(game.guesses)
-            Spacer()
-            Keyboard(game: game)
-        }
-        .padding(.vertical)
-    }
+    // MARK: End game states
     
     @ViewBuilder
     private var won: some View {
         VStack {
             Text("You won! 🎉")
                 .font(.title)
-            Row(guess: game.evaluateGuess(game.target, target: game.target))
+            RowOfLetters(guess: game.evaluateGuess(game.target, target: game.target))
                 .padding(.horizontal)
-            PlayAgainButton(game: game)
+            playAgainButton
         }
         .transition(.asymmetric(
             insertion: .scale.combined(with: .opacity).animation(.spring()),
@@ -50,129 +40,126 @@ struct WordleGameView: View {
         VStack {
             Text("You lost! 😨").font(.title)
             Text("The word was \(game.target)")
-            PlayAgainButton(game: game)
+            playAgainButton
         }
         .transition(.asymmetric(
             insertion: .scale.combined(with: .opacity).animation(.spring()),
             removal: .opacity.animation(.linear(duration: 0.1))
         ))
     }
-}
-
-struct Title: View {
-    var body: some View {
-        VStack {
-            Text("Hello, Wordle!")
-                .font(.title)
-                .bold()
-        }
-    }
-}
-
-
-struct PlayAgainButton: View {
-    @ObservedObject var game: WordleGame
     
-    var body: some View {
+    private var playAgainButton: some View {
         Button("Play again") {
             game.reset()
         }
         .padding(.vertical)
     }
-}
-
-
-struct Guesses: View {
-    private let guesses: [WordleGame.WordGuess]
     
-    init(_ guesses: [WordleGame.WordGuess]) {
-        self.guesses = guesses
+    // MARK: Playing the game
+    
+    @ViewBuilder
+    private var playing: some View {
+        VStack {
+            title
+            Spacer()
+            guesses
+            Spacer()
+            Keyboard(game: game)
+        }
+        .padding(.vertical)
     }
     
-    var body: some View {
+    private var title: some View {
+        Text("Hello, Wordle!")
+            .font(.title)
+            .bold()
+    }
+    
+    private var guesses: some View {
         VStack {
-            ForEach(guesses, id: \.self) { Row(guess: $0) }
+            ForEach(game.guesses, id: \.self) { RowOfLetters(guess: $0) }
         }.padding(.horizontal)
     }
-}
-
-
-struct Row: View {
-    let guess: WordleGame.WordGuess
     
-    var body: some View {
-        HStack {
-            ForEach(guess) { LetterCard($0).aspectRatio(1, contentMode: .fit) }
+    // Using a struct instead of a computed var means that the onAppear animations for submitted
+    // letters only appear on submit
+    // With a computed var, they are triggered on *any* change to the UI
+    private struct RowOfLetters: View {
+        let guess: WordleGame.WordGuess
+        
+        var body: some View {
+            HStack {
+                ForEach(guess) { LetterCard($0).aspectRatio(1, contentMode: .fit) }
+            }
         }
     }
-}
 
+    private struct LetterCard: View {
+        private let letterGuess: WordleGame.LetterGuess
+        
+        init(_ letterGuess: WordleGame.LetterGuess) {
+            self.letterGuess = letterGuess
+        }
 
-struct LetterCard: View {
-    private let letterGuess: WordleGame.LetterGuess
-    
-    init(_ letterGuess: WordleGame.LetterGuess) {
-        self.letterGuess = letterGuess
-    }
-
-    // Manage animations
-    @State private var rotation: Double = 0  // in Degrees
-    @State private var scale: Double = 1.0
-    
-    var body: some View {
-        GeometryReader { geometry in
-            let shape = RoundedRectangle(cornerRadius: LetterCardConstants.cornerRadius)
-            let outline = shape.strokeBorder(lineWidth: LetterCardConstants.strokeWidth)
-            let letterSize = geometry.size.width * LetterCardConstants.fontScale
-            
-            switch letterGuess {
+        // Manage animations
+        @State private var rotation: Double = 0  // in Degrees
+        @State private var scale: Double = 1.0
+        
+        var body: some View {
+            GeometryReader { geometry in
+                let shape = RoundedRectangle(cornerRadius: LetterCardConstants.cornerRadius)
+                let outline = shape.strokeBorder(lineWidth: LetterCardConstants.strokeWidth)
+                let letterSize = geometry.size.width * LetterCardConstants.fontScale
                 
-            case .empty:
-                outline.opacity(LetterCardConstants.emptyOpacity)
-                
-            case .pending(let letter):
-                ZStack {
-                    outline.scaleEffect(scale)
-                    viewLetter(letter, size: letterSize, color: .primary)
-                }
-                .onAppear {
-                    self.scale = 1.1
-                    withAnimation(.linear(duration: LetterCardConstants.bounceDuration)) {
-                        self.scale = 1.0
+                switch letterGuess {
+                    
+                case .empty:
+                    outline.opacity(LetterCardConstants.emptyOpacity)
+                    
+                case .pending(let letter):
+                    ZStack {
+                        outline.scaleEffect(scale)
+                        viewLetter(letter, size: letterSize, color: .primary)
                     }
-                }
-                
-            case .submitted(let letter, let status):
-                ZStack {
-                    shape.fill(statusColour(status))
-                    viewLetter(letter, size: letterSize, color: .white)
-                }
-                .rotation3DEffect(.degrees(rotation), axis: (1, 0, 0))
-                .onAppear {
-                    self.rotation = 90
-                    withAnimation(.linear(duration: LetterCardConstants.flipDuration)) {
-                        self.rotation = 0
+                    .onAppear {
+                        self.scale = 1.1
+                        withAnimation(.linear(duration: LetterCardConstants.bounceDuration)) {
+                            self.scale = 1.0
+                        }
+                    }
+                    
+                case .submitted(let letter, let status):
+                    ZStack {
+                        shape.fill(statusColour(status))
+                        viewLetter(letter, size: letterSize, color: .white)
+                    }
+                    .rotation3DEffect(.degrees(rotation), axis: (1, 0, 0))
+                    .onAppear {
+                        self.rotation = 90
+                        withAnimation(.linear(duration: LetterCardConstants.flipDuration)) {
+                            self.rotation = 0
+                        }
                     }
                 }
             }
         }
-    }
+            
+        private func viewLetter(_ letter: Character, size: CGFloat, color: Color) -> some View {
+            Text(String(letter))
+                .font(.system(size: size))
+                .foregroundColor(color)
+                .bold()
+                .multilineTextAlignment(.center)
+        }
         
-    private func viewLetter(_ letter: Character, size: CGFloat, color: Color) -> some View {
-        Text(String(letter))
-            .font(.system(size: size))
-            .foregroundColor(color)
-            .bold()
-            .multilineTextAlignment(.center)
-    }
-    
-    private struct LetterCardConstants {
-        static let cornerRadius: CGFloat = 0
-        static let strokeWidth: CGFloat = 2
-        static let fontScale: CGFloat = 0.6
-        static let emptyOpacity: Double = 0.6
-        static let flipDuration: Double = 0.15
-        static let bounceDuration: Double = 0.15
+        private struct LetterCardConstants {
+            static let cornerRadius: CGFloat = 0
+            static let strokeWidth: CGFloat = 2
+            static let fontScale: CGFloat = 0.6
+            static let emptyOpacity: Double = 0.6
+            static let flipDuration: Double = 0.15
+            static let bounceDuration: Double = 0.15
+        }
     }
 }
 
