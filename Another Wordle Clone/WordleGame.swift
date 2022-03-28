@@ -49,7 +49,7 @@ class WordleGame: ObservableObject {
     typealias WordGuess = [LetterGuess]
     
     private var prevGuesses: [WordGuess] {
-        model.prevGuesses.map { guess in evaluateGuess(guess, target: model.target) }
+        model.prevGuesses.map { guess in evaluateGuess(guess) }
     }
     
     private var currentGuess: WordGuess {
@@ -67,7 +67,7 @@ class WordleGame: ObservableObject {
         prevGuesses + [ currentGuess ] + futureGuesses
     }
     
-    func evaluateGuess(_ guess: String, target: String) -> WordGuess {
+    func evaluateGuess(_ guess: String) -> WordGuess {
         // We need to get the status of each letter in the guessed word.
 
         // Each letter should indicate the status of only one letter within the
@@ -107,6 +107,12 @@ class WordleGame: ObservableObject {
         return (allMatched + allRemaining.map { (.submitted($0, status: .notInWord), $1) })
             .sorted { $0.1 < $1.1 }
             .map { $0.0 }
+    }
+    
+    func evaluateTarget() -> WordGuess {
+        // Get the closest guess in each letter
+        // NOTE: this method doesn't handle repeated letters in the target well. Is there an elegant solution?
+        target.map { .submitted($0, status: guessedLetters[$0] ?? .notInWord) }
     }
     
     private func findFirstBestMatch(_ letter: Character, _ index: Int, _ remaining: [(Character, Int)]) -> (WordleGame.LetterGuess, Int)? {

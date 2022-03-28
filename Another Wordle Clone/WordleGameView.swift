@@ -25,7 +25,7 @@ struct WordleGameView: View {
         VStack {
             Text("You won! 🎉")
                 .font(.title)
-            RowOfLetters(guess: game.evaluateGuess(game.target, target: game.target))
+            RowOfLetters(guess: game.evaluateGuess(game.target))
                 .padding(.horizontal)
             playAgainButton
         }
@@ -38,8 +38,10 @@ struct WordleGameView: View {
     @ViewBuilder
     private var lost: some View {
         VStack {
-            Text("You lost! 😨").font(.title)
-            Text("The word was \(game.target)")
+            Text("You lost! 😨")
+                .font(.title)
+            RowOfLetters(guess: game.evaluateTarget())
+                .padding(.horizontal)
             playAgainButton
         }
         .transition(.asymmetric(
