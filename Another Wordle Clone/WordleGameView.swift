@@ -84,6 +84,7 @@ struct WordleGameView: View {
     // Using a struct instead of a computed var means that the onAppear animations for submitted
     // letters only appear on submit
     // With a computed var, they are triggered on *any* change to the UI
+    // NOTE: Maybe this should be pulled out into a separate view with it's own previews?
     private struct RowOfLetters: View {
         let guess: WordleGame.WordGuess
         
@@ -169,21 +170,20 @@ struct WordleGameView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        let game = WordleGame()
+        let game = WordleGame(dictionary: ["DANCE", "WHEEL", "PUMPS"])
         
-//        game.addLetter("P")
-//        game.addLetter("O")
-//        game.addLetter("W")
-//        game.addLetter("E")
-//        game.addLetter("R")
-//        game.submit()
-//
-//        game.addLetter("A")
-//        game.addLetter("B")
+        game.addLetter("P")
+        game.addLetter("O")
+        game.addLetter("W")
+        game.addLetter("E")
+        game.addLetter("R")
+        game.submit()
+
+        game.addLetter("A")
+        game.addLetter("B")
         
         return WordleGameView(game: game)
                     .preferredColorScheme(.light)
-                    .previewInterfaceOrientation(.landscapeLeft)
     }
 }
 

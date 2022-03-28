@@ -9,11 +9,11 @@ import SwiftUI
 
 
 class WordleGame: ObservableObject {
-    // NOTE: later, we will load the dictionary from somewhere
-    //       could do something fun where you can select the dictionary to use when you start a new game
-    // I guess the dictionary should contain some representation of word length
-    @Published private var model: Wordle = Wordle(dictionary: loadDictionary())
+    @Published private var model: Wordle
     
+    init(dictionary: [String]? = nil) {
+        model = Wordle(dictionary: dictionary ?? WordleGame.loadDictionary())
+    }
     
     var state: Wordle.GameState {
         model.state

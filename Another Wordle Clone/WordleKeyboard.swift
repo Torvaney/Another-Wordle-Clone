@@ -96,8 +96,15 @@ struct WordleKeyboard: View {
 
 struct WordleKeyboard_Previews: PreviewProvider {
     static var previews: some View {
-        let game = WordleGame()
+        let game = WordleGame(dictionary: ["THICK"])
         
-        WordleKeyboard(game: game)
+        game.addLetter("T")
+        game.addLetter("I")
+        game.addLetter("G")
+        game.addLetter("H")
+        game.addLetter("T")
+        game.submit()
+        
+        return WordleKeyboard(game: game)
     }
 }
