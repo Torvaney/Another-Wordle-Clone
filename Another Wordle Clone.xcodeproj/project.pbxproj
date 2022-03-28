@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B56618B427F2649C00A0C0F0 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = B56618B327F2649C00A0C0F0 /* Array.swift */; };
 		B5CD31BE27CA590F00843D04 /* Wordle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5CD31BD27CA590F00843D04 /* Wordle.swift */; };
 		B5CD31C027CA5BD000843D04 /* WordleGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5CD31BF27CA5BD000843D04 /* WordleGame.swift */; };
 		B5CD31C427CBC1EC00843D04 /* DefaultDictionary.txt in Resources */ = {isa = PBXBuildFile; fileRef = B5CD31C327CBC1EC00843D04 /* DefaultDictionary.txt */; };
@@ -20,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B56618B327F2649C00A0C0F0 /* Array.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		B5B832B227EE5B7000AC496A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		B5CD31BD27CA590F00843D04 /* Wordle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wordle.swift; sourceTree = "<group>"; };
 		B5CD31BF27CA5BD000843D04 /* WordleGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordleGame.swift; sourceTree = "<group>"; };
@@ -75,6 +77,7 @@
 				B5F1103C27F1C21B000B88A3 /* WordleKeyboard.swift */,
 				B5F1103E27F1C5AD000B88A3 /* statusColor.swift */,
 				B5F1104027F1CA26000B88A3 /* Optional.swift */,
+				B56618B327F2649C00A0C0F0 /* Array.swift */,
 			);
 			path = "Another Wordle Clone";
 			sourceTree = "<group>";
@@ -163,6 +166,7 @@
 				B5CD31C027CA5BD000843D04 /* WordleGame.swift in Sources */,
 				B5F1104127F1CA26000B88A3 /* Optional.swift in Sources */,
 				B5F1103F27F1C5AD000B88A3 /* statusColor.swift in Sources */,
+				B56618B427F2649C00A0C0F0 /* Array.swift in Sources */,
 				B5E0423527C6D57A00F83EFC /* Another_Wordle_CloneApp.swift in Sources */,
 				B5F1103D27F1C21B000B88A3 /* WordleKeyboard.swift in Sources */,
 			);

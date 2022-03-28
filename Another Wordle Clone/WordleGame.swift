@@ -23,6 +23,11 @@ class WordleGame: ObservableObject {
         model.target
     }
     
+    var isHardMode: Bool {
+        get { model.isHardMode }
+        set { self.toggleHardMode() }
+    }
+    
     
     // MARK: User intents
     // (inc. methods fowarded from model
@@ -40,7 +45,15 @@ class WordleGame: ObservableObject {
     }
     
     func reset() {
-        model = Wordle(dictionary: WordleGame.loadDictionary())
+        model = Wordle(dictionary: model.dictionary, isHardMode: model.isHardMode)
+    }
+    
+    func toggleHardMode() {
+        if isGameStart {
+            // Creating a new game ensures that hard mode is only ever set at the start of the game
+            // (In fact changing mid-game is impossible, because `isHardMode` is immutable :))
+            model = Wordle(dictionary: model.dictionary, isHardMode: !model.isHardMode)
+        }
     }
     
     
@@ -67,6 +80,10 @@ class WordleGame: ObservableObject {
         prevGuesses + [ currentGuess ] + futureGuesses
     }
     
+    var isGameStart: Bool {
+        prevGuesses == []
+    }
+    
     func evaluateGuess(_ guess: String, target: String) -> WordGuess {
         // We need to get the status of each letter in the guessed word.
 
@@ -87,7 +104,7 @@ class WordleGame: ObservableObject {
         // Any unpaired letters are `.notInWord`
 
         let guessIndexed: [(Character, Int)] = Array(zip(guess, 0..<guess.count))
-        let targetIndexed: [(Character, Int)] = Array(zip(target, 0..<guess.count))
+        let targetIndexed: [(Character, Int)] = Array(zip(target, 0..<target.count))
         
         let (allMatched, allRemaining): ([(LetterGuess, Int)], [(Character, Int)]) = targetIndexed.reduce(([], guessIndexed), { x, y in
             let (matched, remaining) = x

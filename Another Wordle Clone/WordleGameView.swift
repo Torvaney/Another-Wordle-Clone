@@ -65,6 +65,8 @@ struct WordleGameView: View {
             guesses
             Spacer()
             WordleKeyboard(game: game)
+            Divider()
+            hardModeToggle
         }
         .padding(.vertical)
     }
@@ -73,6 +75,12 @@ struct WordleGameView: View {
         Text("Hello, Wordle!")
             .font(.title)
             .bold()
+    }
+    
+    private var hardModeToggle: some View {
+        Toggle("Hard mode", isOn: $game.isHardMode)
+            .disabled(!game.isGameStart)
+            .padding(.horizontal)
     }
     
     private var guesses: some View {
