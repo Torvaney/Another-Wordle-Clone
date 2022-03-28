@@ -64,7 +64,7 @@ struct WordleGameView: View {
             Spacer()
             guesses
             Spacer()
-            Keyboard(game: game)
+            WordleKeyboard(game: game)
         }
         .padding(.vertical)
     }
@@ -130,7 +130,7 @@ struct WordleGameView: View {
                     
                 case .submitted(let letter, let status):
                     ZStack {
-                        shape.fill(statusColour(status))
+                        shape.fill(statusColor(status))
                         viewLetter(letter, size: letterSize, color: .white)
                     }
                     .rotation3DEffect(.degrees(rotation), axis: (1, 0, 0))
@@ -160,119 +160,6 @@ struct WordleGameView: View {
             static let flipDuration: Double = 0.15
             static let bounceDuration: Double = 0.15
         }
-    }
-}
-
-
-struct Keyboard: View {
-    @ObservedObject var game: WordleGame
-    private let alphabet = "QWERTYUIOPASDFGHJKLZXCVBNM"
-    
-    var body: some View {
-        LazyVGrid(columns: Array(repeating: GridItem(), count: 10), alignment: .center) {
-            ForEach(Array(alphabet), id: \.self) { LetterKey(letter: $0, game: game) }
-            Spacer()
-            Spacer()
-            BackspaceKey(game: game)
-            EnterKey(game: game)
-        }
-        .padding(.horizontal)
-    }
-}
-
-
-struct LetterKey: View {
-    let letter: Character
-    @ObservedObject var game: WordleGame
-    
-    @ViewBuilder
-    var background: some View {
-        let shape = RoundedRectangle(cornerRadius: 3)
-        
-        if let status = game.guessedLetters[letter] {
-            shape
-                .fill(statusColour(status))
-        } else {
-            shape
-                .fill(.secondary)
-                .opacity(0.35)
-        }
-    }
-    
-    var textColor: Color {
-        if let _ = game.guessedLetters[letter] {
-            return .white
-        } else {
-            return .primary
-        }
-    }
-    
-    var body: some View {
-        ZStack {
-            background
-                .transition(.opacity.animation(.easeIn))
-            Text(String(letter))
-                .foregroundColor(textColor)
-        }
-        .aspectRatio(3/4, contentMode: .fit)
-        .onTapGesture {
-            game.addLetter(letter)
-        }
-    }
-}
-
-
-struct EnterKey: View {
-    var game: WordleGame
-    
-    var body: some View {
-        let shape = RoundedRectangle(cornerRadius: 3)
-        
-        ZStack {
-            shape
-                .fill(.secondary)
-                .opacity(0.35)
-            Image(systemName: "return")
-        }
-        .aspectRatio(3/4, contentMode: .fit)
-        .onTapGesture {
-            // NOTE: Submission animations are handled using onAppear.
-            //       This seems like poor practice?
-            //       But not sure how to get it it work as desired otherwise...
-            game.submit()
-        }
-    }
-}
-
-
-struct BackspaceKey: View {
-    var game: WordleGame
-    
-    var body: some View {
-        let shape = RoundedRectangle(cornerRadius: 3)
-        
-        ZStack {
-            shape
-                .fill(.secondary)
-                .opacity(0.35)
-            Image(systemName: "delete.backward")
-        }
-        .aspectRatio(3/4, contentMode: .fit)
-        .onTapGesture {
-            game.removeLetter()
-        }
-    }
-}
-
-
-func statusColour(_ status: WordleGame.GuessStatus) -> Color {
-    switch status {
-    case .notInWord:
-        return .gray
-    case .inWord:
-        return .orange
-    case .inPosition:
-        return .green
     }
 }
 

@@ -14,6 +14,9 @@
 		B5E0423727C6D57A00F83EFC /* WordleGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E0423627C6D57A00F83EFC /* WordleGameView.swift */; };
 		B5E0423927C6D57D00F83EFC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B5E0423827C6D57D00F83EFC /* Assets.xcassets */; };
 		B5E0423C27C6D57D00F83EFC /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B5E0423B27C6D57D00F83EFC /* Preview Assets.xcassets */; };
+		B5F1103D27F1C21B000B88A3 /* WordleKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5F1103C27F1C21B000B88A3 /* WordleKeyboard.swift */; };
+		B5F1103F27F1C5AD000B88A3 /* statusColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5F1103E27F1C5AD000B88A3 /* statusColor.swift */; };
+		B5F1104127F1CA26000B88A3 /* Optional.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5F1104027F1CA26000B88A3 /* Optional.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +29,9 @@
 		B5E0423627C6D57A00F83EFC /* WordleGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordleGameView.swift; sourceTree = "<group>"; };
 		B5E0423827C6D57D00F83EFC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B5E0423B27C6D57D00F83EFC /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		B5F1103C27F1C21B000B88A3 /* WordleKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordleKeyboard.swift; sourceTree = "<group>"; };
+		B5F1103E27F1C5AD000B88A3 /* statusColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = statusColor.swift; sourceTree = "<group>"; };
+		B5F1104027F1CA26000B88A3 /* Optional.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Optional.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +72,9 @@
 				B5CD31BD27CA590F00843D04 /* Wordle.swift */,
 				B5CD31BF27CA5BD000843D04 /* WordleGame.swift */,
 				B5CD31C327CBC1EC00843D04 /* DefaultDictionary.txt */,
+				B5F1103C27F1C21B000B88A3 /* WordleKeyboard.swift */,
+				B5F1103E27F1C5AD000B88A3 /* statusColor.swift */,
+				B5F1104027F1CA26000B88A3 /* Optional.swift */,
 			);
 			path = "Another Wordle Clone";
 			sourceTree = "<group>";
@@ -152,7 +161,10 @@
 				B5CD31BE27CA590F00843D04 /* Wordle.swift in Sources */,
 				B5E0423727C6D57A00F83EFC /* WordleGameView.swift in Sources */,
 				B5CD31C027CA5BD000843D04 /* WordleGame.swift in Sources */,
+				B5F1104127F1CA26000B88A3 /* Optional.swift in Sources */,
+				B5F1103F27F1C5AD000B88A3 /* statusColor.swift in Sources */,
 				B5E0423527C6D57A00F83EFC /* Another_Wordle_CloneApp.swift in Sources */,
+				B5F1103D27F1C21B000B88A3 /* WordleKeyboard.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
