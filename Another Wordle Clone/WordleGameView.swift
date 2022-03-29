@@ -25,7 +25,7 @@ struct WordleGameView: View {
         VStack {
             Text("You won! 🎉")
                 .font(.title)
-            RowOfLetters(guess: game.evaluateGuess(game.target, target: game.target))
+            RowOfLetters(guess: game.target)
                 .padding(.horizontal)
             playAgainButton
         }
@@ -38,8 +38,10 @@ struct WordleGameView: View {
     @ViewBuilder
     private var lost: some View {
         VStack {
-            Text("You lost! 😨").font(.title)
-            Text("The word was \(game.target)")
+            Text("You lost! 😨")
+                .font(.title)
+            RowOfLetters(guess: game.target)
+                .padding(.horizontal)
             playAgainButton
         }
         .transition(.asymmetric(
@@ -94,7 +96,7 @@ struct WordleGameView: View {
     // With a computed var, they are triggered on *any* change to the UI
     // NOTE: Maybe this should be pulled out into a separate view with it's own previews?
     private struct RowOfLetters: View {
-        let guess: WordleGame.WordGuess
+        let guess: WordleGame.IndexedWordGuess
         
         var body: some View {
             HStack {
@@ -104,9 +106,9 @@ struct WordleGameView: View {
     }
 
     private struct LetterCard: View {
-        private let letterGuess: WordleGame.LetterGuess
+        private let letterGuess: WordleGame.IndexedLetterGuess
         
-        init(_ letterGuess: WordleGame.LetterGuess) {
+        init(_ letterGuess: WordleGame.IndexedLetterGuess) {
             self.letterGuess = letterGuess
         }
 
@@ -120,7 +122,7 @@ struct WordleGameView: View {
                 let outline = shape.strokeBorder(lineWidth: LetterCardConstants.strokeWidth)
                 let letterSize = geometry.size.width * LetterCardConstants.fontScale
                 
-                switch letterGuess {
+                switch letterGuess.guess {
                     
                 case .empty:
                     outline.opacity(LetterCardConstants.emptyOpacity)
@@ -144,7 +146,9 @@ struct WordleGameView: View {
                     }
                     .rotation3DEffect(.degrees(rotation), axis: (1, 0, 0))
                     .onAppear {
-                        self.rotation = 90
+                        // Avoid singular matrix when rotation is exactly 90
+                        // See: https://stackoverflow.com/questions/66031386/ignoring-singular-matrix-should-i-concerning-ignoring-to-this-console-massage-i
+                        self.rotation = 89.99
                         withAnimation(.linear(duration: LetterCardConstants.flipDuration)) {
                             self.rotation = 0
                         }

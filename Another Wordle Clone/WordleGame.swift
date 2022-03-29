@@ -19,10 +19,6 @@ class WordleGame: ObservableObject {
         model.state
     }
     
-    var target: String {
-        model.target
-    }
-    
     var isHardMode: Bool {
         get { model.isHardMode }
         set { self.toggleHardMode() }
@@ -60,6 +56,7 @@ class WordleGame: ObservableObject {
     // MARK: Adding inferred metadata to guesses
     
     typealias WordGuess = [LetterGuess]
+    typealias IndexedWordGuess = [IndexedLetterGuess]
     
     private var prevGuesses: [WordGuess] {
         model.prevGuesses.map { guess in evaluateGuess(guess, target: model.target) }
@@ -76,15 +73,33 @@ class WordleGame: ObservableObject {
         return Array(repeating: emptyGuess, count: nFutureGuesses)
     }
     
-    var guesses: [WordGuess] {
-        prevGuesses + [ currentGuess ] + futureGuesses
+    var guesses: [IndexedWordGuess] {
+        let baseguesses = prevGuesses + [ currentGuess ] + futureGuesses
+        
+        return baseguesses.enumerated().map { (guessIx, guess) in
+            guess.enumerated().map { (letterIx, letter) in
+                IndexedLetterGuess(letter, at: (guessIx, letterIx))
+            }
+        }
+    }
+    
+    var target: IndexedWordGuess {
+        // TODO: this assumes you've won the game. Needs to handle losing case, too
+        model.target
+            .enumerated()
+            .map { (ix, letter) in
+                IndexedLetterGuess(
+                    .submitted(letter, status: .inPosition),
+                    at: (0, ix)
+                )
+            }
     }
     
     var isGameStart: Bool {
         prevGuesses == []
     }
     
-    func evaluateGuess(_ guess: String, target: String) -> WordGuess {
+    private func evaluateGuess(_ guess: String, target: String) -> WordGuess {
         // We need to get the status of each letter in the guessed word.
 
         // Each letter should indicate the status of only one letter within the
@@ -150,19 +165,32 @@ class WordleGame: ObservableObject {
             .map { (.submitted(letter, status: $0), $1) }
     }
     
-    enum LetterGuess: Identifiable, Hashable {
+    struct IndexedLetterGuess: Identifiable, Hashable {
+        let guessIndex: Int
+        let letterIndex: Int
+        let guess: LetterGuess
+        
+        init(_ guess: LetterGuess, at: (Int, Int)) {
+            self.guess = guess
+            guessIndex = at.0
+            letterIndex = at.1
+        }
+        
+        // Conform to Identifiable, for the purposes of rendering Views
+        // A guess is identified by its position in the grid
+        internal var id: Pair<Int, Int> {
+            Pair(first: guessIndex, second: letterIndex)
+        }
+        
+    }
+    
+    enum LetterGuess: Hashable {
         // Current guess (and future guesses)
         case empty
         case pending(_ letter: Character)
         
         // Submitted guesses
         case submitted(_ letter: Character, status: GuessStatus)
-        
-        // Conform to Identifiable
-        // Although... I'm not sure this is actually correct...
-        // Shouldn't a letter guess be identified by the Guess # and the letter index?
-        // i.e. the position on the grid?
-        internal var id: UUID { UUID() }
     }
     
     enum GuessStatus: Comparable {
@@ -232,4 +260,9 @@ class WordleGame: ObservableObject {
             return []
         }
     }
+}
+
+struct Pair<T: Hashable, U: Hashable>: Hashable {
+  let first: T
+  let second: U
 }
