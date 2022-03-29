@@ -107,6 +107,10 @@ struct Wordle {
         let targetIndexed: [(Character, Int)] = Array(zip(target, 0..<target.count))
         let prevIndexed: [(Character, Int)] = prevGuesses.flatMap { Array(zip($0, 0..<$0.count)) }
         
+        // TODO: should take into account duplicate letters.
+        // So if the target included 2 letter "E"s, and the user only guessed one "E" in each word, the
+        // second "E" was never actually guessed!
+        // However, this method will treat it as though it was!
         return targetIndexed
             .map { (letter: Character, ix: Int) -> (Character, Int, TargetLetterStatus) in
                 if prevIndexed.contains(where: { $0 == (letter, ix) }) {

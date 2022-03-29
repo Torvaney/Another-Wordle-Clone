@@ -84,15 +84,20 @@ class WordleGame: ObservableObject {
     }
     
     var target: IndexedWordGuess {
-        // TODO: this assumes you've won the game. Needs to handle losing case, too
-        model.target
-            .enumerated()
-            .map { (ix, letter) in
-                IndexedLetterGuess(
-                    .submitted(letter, status: .inPosition),
-                    at: (0, ix)
-                )
-            }
+        model.targetGuesses.map { (letter, ix, status) in
+            IndexedLetterGuess(.submitted(letter, status: targetStatusToGuessStatus(status)), at: (0, ix))
+        }
+    }
+    
+    private func targetStatusToGuessStatus(_ status: Wordle.TargetLetterStatus) -> GuessStatus {
+        switch status {
+        case .notGuessed:
+            return .notInWord
+        case .unknownPosition:
+            return .inWord
+        case .knownPosition:
+            return .inPosition
+        }
     }
     
     var isGameStart: Bool {
@@ -139,12 +144,6 @@ class WordleGame: ObservableObject {
         return (allMatched + allRemaining.map { (.submitted($0, status: .notInWord), $1) })
             .sorted { $0.1 < $1.1 }
             .map { $0.0 }
-    }
-    
-    func evaluateTarget() -> WordGuess {
-        // Get the closest guess in each letter
-        // NOTE: this method doesn't handle repeated letters in the target well. Is there an elegant solution?
-        model.target.map { .submitted($0, status: guessedLetters[$0] ?? .notInWord) }
     }
     
     private func findFirstBestMatch(_ letter: Character, _ index: Int, _ remaining: [(Character, Int)]) -> (WordleGame.LetterGuess, Int)? {
