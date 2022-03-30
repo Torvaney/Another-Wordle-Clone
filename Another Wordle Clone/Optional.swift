@@ -9,12 +9,20 @@ import Foundation
 
 
 extension Optional {
-    func ifSome<X>(_ yes: X, _ no: X) -> X {
+    var bool: Bool {
         switch self {
         case .none:
-            return no
+            return false
         case .some:
+            return true
+        }
+    }
+    
+    func ifSome<X>(_ yes: X, _ no: X) -> X {
+        if self.bool {
             return yes
+        } else {
+            return no
         }
     }
 }

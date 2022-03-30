@@ -36,7 +36,7 @@ class WordleGame: ObservableObject {
         model.removeLetter()
     }
     
-    func submit() {
+    func submit() -> Wordle.SubmitResult {
         model.submit()
     }
     

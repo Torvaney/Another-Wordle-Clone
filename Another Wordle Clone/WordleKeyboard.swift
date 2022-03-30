@@ -9,31 +9,83 @@ import SwiftUI
 
 struct WordleKeyboard: View {
     @ObservedObject var game: WordleGame
+
+    // TODO: want to show the alerts over the whole view - how best to achieve this?
+    @State private var lastSubmitResult: Wordle.SubmitResult? = nil
+    @State private var showAlert: Bool = false
+    
     private let alphabet = "QWERTYUIOPASDFGHJKLZXCVBNM"
     
     var body: some View {
-        LazyVGrid(columns: Array(repeating: GridItem(), count: 10), alignment: .center) {
-            ForEach(Array(alphabet), id: \.self) { letter in
-                LetterKey(letter: letter, status: game.guessedLetters[letter])
+        ZStack {
+        
+            LazyVGrid(columns: Array(repeating: GridItem(), count: 10), alignment: .center) {
+                ForEach(Array(alphabet), id: \.self) { letter in
+                    LetterKey(letter: letter, status: game.guessedLetters[letter])
+                        .onTapGesture {
+                            game.addLetter(letter)
+                        }
+                }
+                Spacer()
+                Spacer()
+                backspaceKey
                     .onTapGesture {
-                        game.addLetter(letter)
+                        game.removeLetter()
+                    }
+                enterKey
+                    .onTapGesture {
+                        // NOTE: Submission animations are handled using onAppear.
+                        //       This seems like poor practice?
+                        //       But not sure how to get it it work as desired otherwise...
+                        let submitResult = game.submit()
+                        lastSubmitResult = submitResult
+                        
+                        switch submitResult {
+                        case .success:
+                            showAlert = false
+                        default:
+                            showAlert = true
+                            withAnimation(.easeOut(duration: 0.3).delay(1)) {
+                                showAlert = false
+                            }
+                        }
                     }
             }
-            Spacer()
-            Spacer()
-            backspaceKey
-                .onTapGesture {
-                    game.removeLetter()
+            .padding(.horizontal)
+            
+            Text(alertText)
+                .foregroundColor(Color(UIColor.systemBackground))
+                .bold()
+                .padding()
+                .background {
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill(.foreground)
                 }
-            enterKey
-                .onTapGesture {
-                    // NOTE: Submission animations are handled using onAppear.
-                    //       This seems like poor practice?
-                    //       But not sure how to get it it work as desired otherwise...
-                    game.submit()
-                }
+                .opacity(showAlert ? 1 : 0)
         }
-        .padding(.horizontal)
+    }
+    
+    private var alertText: String {
+        switch lastSubmitResult {
+        
+        // Should never happen
+        case .none:
+            return ""
+        case .some(.success):
+            return ""
+            
+        // Basic alerts
+        case .some(.notInDictionary):
+            return "Not in word list"
+        case .some(.notEnoughLetters):
+            return "Not enough letters"
+        
+        // Hard mode
+        case .some(.notUsingKnownLetter(let letter)):
+            return "Must use letter \(letter)"
+        case .some(.notUsingKnownLetterAtLocation(let letter, at: let at)):
+            return "Letter \(letter) must be in location \(at + 1)"
+        }
     }
     
     private struct Key<Content>: View where Content: View {
@@ -103,7 +155,7 @@ struct WordleKeyboard_Previews: PreviewProvider {
         game.addLetter("G")
         game.addLetter("H")
         game.addLetter("T")
-        game.submit()
+        let _ = game.submit()
         
         return WordleKeyboard(game: game)
     }
