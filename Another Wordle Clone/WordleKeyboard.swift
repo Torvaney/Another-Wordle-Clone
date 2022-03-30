@@ -9,10 +9,7 @@ import SwiftUI
 
 struct WordleKeyboard: View {
     @ObservedObject var game: WordleGame
-
-    // TODO: want to show the alerts over the whole view - how best to achieve this?
-    @State private var lastSubmitResult: Wordle.SubmitResult? = nil
-    @State private var showAlert: Bool = false
+    var onSubmit: (Wordle.SubmitResult) -> ()
     
     private let alphabet = "QWERTYUIOPASDFGHJKLZXCVBNM"
     
@@ -37,54 +34,13 @@ struct WordleKeyboard: View {
                         // NOTE: Submission animations are handled using onAppear.
                         //       This seems like poor practice?
                         //       But not sure how to get it it work as desired otherwise...
+                        //       Maybe it would work now that the IDs are correct?
+                        //       TODO: try animating withAnimation instead of onAppear
                         let submitResult = game.submit()
-                        lastSubmitResult = submitResult
-                        
-                        switch submitResult {
-                        case .success:
-                            showAlert = false
-                        default:
-                            showAlert = true
-                            withAnimation(.easeOut(duration: 0.3).delay(1)) {
-                                showAlert = false
-                            }
-                        }
+                        onSubmit(submitResult)
                     }
             }
             .padding(.horizontal)
-            
-            Text(alertText)
-                .foregroundColor(Color(UIColor.systemBackground))
-                .bold()
-                .padding()
-                .background {
-                    RoundedRectangle(cornerRadius: 5)
-                        .fill(.foreground)
-                }
-                .opacity(showAlert ? 1 : 0)
-        }
-    }
-    
-    private var alertText: String {
-        switch lastSubmitResult {
-        
-        // Should never happen
-        case .none:
-            return ""
-        case .some(.success):
-            return ""
-            
-        // Basic alerts
-        case .some(.notInDictionary):
-            return "Not in word list"
-        case .some(.notEnoughLetters):
-            return "Not enough letters"
-        
-        // Hard mode
-        case .some(.notUsingKnownLetter(let letter)):
-            return "Must use letter \(letter)"
-        case .some(.notUsingKnownLetterAtLocation(let letter, at: let at)):
-            return "Letter \(letter) must be in location \(at + 1)"
         }
     }
     
@@ -157,6 +113,6 @@ struct WordleKeyboard_Previews: PreviewProvider {
         game.addLetter("T")
         let _ = game.submit()
         
-        return WordleKeyboard(game: game)
+        return WordleKeyboard(game: game, onSubmit: { _ in })
     }
 }

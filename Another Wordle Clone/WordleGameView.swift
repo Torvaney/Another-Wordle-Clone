@@ -10,6 +10,9 @@ import SwiftUI
 struct WordleGameView: View {
     @ObservedObject var game: WordleGame
     
+    @State private var lastSubmitResult: Wordle.SubmitResult? = nil
+    @State private var showAlert: Bool = false
+    
     var body: some View {
         switch game.state {
         case .playing: playing
@@ -64,9 +67,21 @@ struct WordleGameView: View {
         VStack {
             title
             Spacer()
-            guesses
+            guesses.overlay(alert)
             Spacer()
-            WordleKeyboard(game: game)
+            WordleKeyboard(game: game) { result in
+                lastSubmitResult = result
+                
+                switch result {
+                case .success:
+                    showAlert = false
+                default:
+                    showAlert = true
+                    withAnimation(.easeOut(duration: 0.3).delay(1)) {
+                        showAlert = false
+                    }
+                }
+            }
             Divider()
             hardModeToggle
         }
@@ -77,6 +92,41 @@ struct WordleGameView: View {
         Text("Hello, Wordle!")
             .font(.title)
             .bold()
+    }
+    
+    private var alert: some View {
+        Text(alertText)
+            .foregroundColor(Color(UIColor.systemBackground))
+            .bold()
+            .padding()
+            .background {
+                RoundedRectangle(cornerRadius: 5)
+                    .fill(.foreground)
+            }
+            .opacity(showAlert ? 1 : 0)
+    }
+    
+    private var alertText: String {
+        switch lastSubmitResult {
+        
+        // Should never happen
+        case .none:
+            return ""
+        case .some(.success):
+            return ""
+            
+        // Basic alerts
+        case .some(.notInDictionary):
+            return "Not in word list"
+        case .some(.notEnoughLetters):
+            return "Not enough letters"
+        
+        // Hard mode
+        case .some(.notUsingKnownLetter(let letter)):
+            return "Must use letter \(letter)"
+        case .some(.notUsingKnownLetterAtLocation(let letter, at: let at)):
+            return "Letter \(letter) must be in location \(at + 1)"
+        }
     }
     
     private var hardModeToggle: some View {
