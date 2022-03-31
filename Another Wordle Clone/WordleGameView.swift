@@ -10,9 +10,6 @@ import SwiftUI
 struct WordleGameView: View {
     @ObservedObject var game: WordleGame
     
-    @State private var lastSubmitResult: Wordle.SubmitResult? = nil
-    @State private var showAlert: Bool = false
-    
     var body: some View {
         switch game.state {
         case .playing: playing
@@ -20,6 +17,7 @@ struct WordleGameView: View {
         case .lost: lost
         }
     }
+    
     
     // MARK: End game states
     
@@ -60,38 +58,63 @@ struct WordleGameView: View {
         .padding(.vertical)
     }
     
+    
     // MARK: Playing the game
     
     @ViewBuilder
     private var playing: some View {
-        VStack {
-            title
-            Spacer()
-            guesses.overlay(alert)
-            Spacer()
-            WordleKeyboard(game: game) { result in
-                lastSubmitResult = result
-                
-                switch result {
-                case .success:
-                    showAlert = false
-                default:
-                    showAlert = true
-                    withAnimation(.easeOut(duration: 0.3).delay(1)) {
-                        showAlert = false
-                    }
-                }
+        ZStack {
+            VStack {
+                title
+                Spacer()
+                guesses
+                Spacer()
+                WordleKeyboard(game: game, onSubmit: animateAlert)
+                Divider()
+                hardModeToggle
             }
-            Divider()
-            hardModeToggle
+            .padding(.vertical)
+            
+            VStack {
+                alert
+                    .padding()
+                    .offset(x: 0, y: 10)
+                Spacer()
+            }
+            
         }
-        .padding(.vertical)
     }
     
     private var title: some View {
         Text("Hello, Wordle!")
             .font(.title)
             .bold()
+    }
+    
+    private var hardModeToggle: some View {
+        Toggle("Hard mode", isOn: $game.isHardMode)
+            .disabled(!game.isGameStart)
+            .padding(.horizontal)
+    }
+    
+    
+    // MARK: On-submit alerts
+    
+    @State private var lastSubmitResult: Wordle.SubmitResult? = nil
+    @State private var showAlert: Bool = false
+    
+    private func animateAlert(_ result: Wordle.SubmitResult) -> () {
+        lastSubmitResult = result
+        
+        switch result {
+        case .success:
+            showAlert = false
+        default:
+            showAlert = true
+            withAnimation(.easeOut(duration: 0.3).delay(1)) {
+                showAlert = false
+            }
+        }
     }
     
     private var alert: some View {
@@ -109,7 +132,8 @@ struct WordleGameView: View {
     private var alertText: String {
         switch lastSubmitResult {
         
-        // Should never happen
+        // Should never be shown on-screen
+        // (i.e. should never co-occur with showAlert)
         case .none:
             return ""
         case .some(.success):
@@ -125,15 +149,27 @@ struct WordleGameView: View {
         case .some(.notUsingKnownLetter(let letter)):
             return "Must use letter \(letter)"
         case .some(.notUsingKnownLetterAtLocation(let letter, at: let at)):
-            return "Letter \(letter) must be in location \(at + 1)"
+            return "\(ordinalise(at+1)) letter should be \(letter)"
         }
     }
     
-    private var hardModeToggle: some View {
-        Toggle("Hard mode", isOn: $game.isHardMode)
-            .disabled(!game.isGameStart)
-            .padding(.horizontal)
+    private func ordinalise(_ n: Int) -> String {
+        switch n {
+        case 1:
+            return "1st"
+        case 2:
+            return "2nd"
+        case 3:
+            return "3rd"
+        default:
+            // It's okay to ignore 21st etc, since
+            // we will never have that many letters (for now?)
+            return "\(n)th"
+        }
     }
+    
+    
+    // MARK: Wordle board (current, previous and unused guesses)
     
     private var guesses: some View {
         VStack {
