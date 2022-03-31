@@ -21,12 +21,12 @@ struct WordleKeyboard: View {
             LazyVGrid(columns: Array(repeating: GridItem(), count: 10), alignment: .center) {
                 ForEach(Array(alphabet), id: \.self) { letter in
                     LetterKey(letter: letter, status: guessedLetters[letter])
-                        .onTapGesture { onLetter(letter) }
+                        .simultaneousGesture(TapGesture().onEnded { _ in onLetter(letter) })
                 }
                 Spacer()
                 Spacer()
-                backspaceKey.onTapGesture(perform: onBackspace)
-                enterKey.onTapGesture(perform: onEnter)
+                backspaceKey.simultaneousGesture(TapGesture().onEnded { _ in onBackspace() })
+                enterKey.simultaneousGesture(TapGesture().onEnded { _ in onEnter() })
             }
             .padding(.horizontal)
         }
@@ -36,6 +36,8 @@ struct WordleKeyboard: View {
         let fill: Color
         let opacity: CGFloat
         let content: () -> Content
+        
+        @State private var isPressed: Bool = false
         
         init(fill: Color, opacity: CGFloat, @ViewBuilder content: @escaping () -> Content) {
             self.fill = fill
@@ -50,10 +52,17 @@ struct WordleKeyboard: View {
                 shape
                     .fill(fill)
                     .opacity(opacity)
+                    .scaleEffect(self.isPressed ? 1.1 : 1)
                     .transition(.opacity.animation(.easeIn))
                 content()
             }
             .aspectRatio(KeyConstants.aspectRatio, contentMode: KeyConstants.aspectMode)
+            .onTapGesture {
+                self.isPressed = true
+                withAnimation(.linear(duration: KeyConstants.bounceDuration).delay(KeyConstants.bounceDuration)) {
+                    self.isPressed = false
+                }
+            }
         }
     }
     
@@ -86,7 +95,7 @@ struct WordleKeyboard: View {
         static let baseOpacity: CGFloat = 0.35
         static let baseFill: Color = .secondary
         static let cornerRadius: CGFloat = 3
-        
+        static let bounceDuration: CGFloat = 0.15
     }
 }
 
