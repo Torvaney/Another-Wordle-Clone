@@ -189,6 +189,11 @@ class WordleGame: ObservableObject {
         
     }
     
+    struct Pair<T: Hashable, U: Hashable>: Hashable {
+      let first: T
+      let second: U
+    }
+    
     enum LetterGuess: Hashable {
         // Current guess (and future guesses)
         case empty
@@ -230,7 +235,9 @@ class WordleGame: ObservableObject {
     
     // MARK: Getting used letters
     
-    var guessedLetters: Dictionary<Character, GuessStatus> {
+    typealias LetterLookup = Dictionary<Character, GuessStatus>
+    
+    var guessedLetters: LetterLookup {
         let letterGuesses: [(Character, GuessStatus)] = prevGuesses
             .joined()
             .compactMap { guess in
@@ -265,9 +272,4 @@ class WordleGame: ObservableObject {
             return []
         }
     }
-}
-
-struct Pair<T: Hashable, U: Hashable>: Hashable {
-  let first: T
-  let second: U
 }

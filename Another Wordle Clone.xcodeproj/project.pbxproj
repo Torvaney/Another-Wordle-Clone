@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B55F2D4927F603B20026FAC4 /* LetterCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B55F2D4827F603B20026FAC4 /* LetterCard.swift */; };
 		B56618B427F2649C00A0C0F0 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = B56618B327F2649C00A0C0F0 /* Array.swift */; };
 		B5CD31BE27CA590F00843D04 /* Wordle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5CD31BD27CA590F00843D04 /* Wordle.swift */; };
 		B5CD31C027CA5BD000843D04 /* WordleGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5CD31BF27CA5BD000843D04 /* WordleGame.swift */; };
@@ -21,6 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B55F2D4827F603B20026FAC4 /* LetterCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LetterCard.swift; sourceTree = "<group>"; };
 		B56618B327F2649C00A0C0F0 /* Array.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		B5B832B227EE5B7000AC496A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		B5CD31BD27CA590F00843D04 /* Wordle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wordle.swift; sourceTree = "<group>"; };
@@ -78,6 +80,7 @@
 				B5F1103E27F1C5AD000B88A3 /* statusColor.swift */,
 				B5F1104027F1CA26000B88A3 /* Optional.swift */,
 				B56618B327F2649C00A0C0F0 /* Array.swift */,
+				B55F2D4827F603B20026FAC4 /* LetterCard.swift */,
 			);
 			path = "Another Wordle Clone";
 			sourceTree = "<group>";
@@ -164,6 +167,7 @@
 				B5CD31BE27CA590F00843D04 /* Wordle.swift in Sources */,
 				B5E0423727C6D57A00F83EFC /* WordleGameView.swift in Sources */,
 				B5CD31C027CA5BD000843D04 /* WordleGame.swift in Sources */,
+				B55F2D4927F603B20026FAC4 /* LetterCard.swift in Sources */,
 				B5F1104127F1CA26000B88A3 /* Optional.swift in Sources */,
 				B5F1103F27F1C5AD000B88A3 /* statusColor.swift in Sources */,
 				B56618B427F2649C00A0C0F0 /* Array.swift in Sources */,

@@ -69,7 +69,7 @@ struct WordleGameView: View {
                 Spacer()
                 guesses
                 Spacer()
-                WordleKeyboard(game: game, onSubmit: animateAlert)
+                keyboard
                 Divider()
                 hardModeToggle
             }
@@ -97,8 +97,25 @@ struct WordleGameView: View {
             .padding(.horizontal)
     }
     
+    private var keyboard: some View {
+        WordleKeyboard(
+            guessedLetters: game.guessedLetters,
+            onLetter: game.addLetter,
+            onBackspace: game.removeLetter,
+            onEnter: {
+                // NOTE: Submission animations are handled using onAppear.
+                //       This seems like poor practice?
+                //       But not sure how to get it it work as desired otherwise...
+                //       Maybe it would work now that the IDs are correct?
+                //       TODO: try animating withAnimation instead of onAppear
+                let submitResult = game.submit()
+                animateAlert(submitResult)
+            }
+        )
+    }
     
-    // MARK: On-submit alerts
+    
+    // MARK: On-submit alerts (i.e. invalid submission attempt)
     
     @State private var lastSubmitResult: Wordle.SubmitResult? = nil
     @State private var showAlert: Bool = false
@@ -190,76 +207,6 @@ struct WordleGameView: View {
             }
         }
     }
-
-    private struct LetterCard: View {
-        private let letterGuess: WordleGame.IndexedLetterGuess
-        
-        init(_ letterGuess: WordleGame.IndexedLetterGuess) {
-            self.letterGuess = letterGuess
-        }
-
-        // Manage animations
-        @State private var rotation: Double = 0  // in Degrees
-        @State private var scale: Double = 1.0
-        
-        var body: some View {
-            GeometryReader { geometry in
-                let shape = RoundedRectangle(cornerRadius: LetterCardConstants.cornerRadius)
-                let outline = shape.strokeBorder(lineWidth: LetterCardConstants.strokeWidth)
-                let letterSize = geometry.size.width * LetterCardConstants.fontScale
-                
-                switch letterGuess.guess {
-                    
-                case .empty:
-                    outline.opacity(LetterCardConstants.emptyOpacity)
-                    
-                case .pending(let letter):
-                    ZStack {
-                        outline.scaleEffect(scale)
-                        viewLetter(letter, size: letterSize, color: .primary)
-                    }
-                    .onAppear {
-                        self.scale = 1.1
-                        withAnimation(.linear(duration: LetterCardConstants.bounceDuration)) {
-                            self.scale = 1.0
-                        }
-                    }
-                    
-                case .submitted(let letter, let status):
-                    ZStack {
-                        shape.fill(statusColor(status))
-                        viewLetter(letter, size: letterSize, color: .white)
-                    }
-                    .rotation3DEffect(.degrees(rotation), axis: (1, 0, 0))
-                    .onAppear {
-                        // Avoid singular matrix when rotation is exactly 90
-                        // See: https://stackoverflow.com/questions/66031386/ignoring-singular-matrix-should-i-concerning-ignoring-to-this-console-massage-i
-                        self.rotation = 89.99
-                        withAnimation(.linear(duration: LetterCardConstants.flipDuration)) {
-                            self.rotation = 0
-                        }
-                    }
-                }
-            }
-        }
-            
-        private func viewLetter(_ letter: Character, size: CGFloat, color: Color) -> some View {
-            Text(String(letter))
-                .font(.system(size: size))
-                .foregroundColor(color)
-                .bold()
-                .multilineTextAlignment(.center)
-        }
-        
-        private struct LetterCardConstants {
-            static let cornerRadius: CGFloat = 0
-            static let strokeWidth: CGFloat = 2
-            static let fontScale: CGFloat = 0.6
-            static let emptyOpacity: Double = 0.6
-            static let flipDuration: Double = 0.15
-            static let bounceDuration: Double = 0.15
-        }
-    }
 }
 
 
@@ -275,7 +222,7 @@ struct ContentView_Previews: PreviewProvider {
         game.addLetter("W")
         game.addLetter("E")
         game.addLetter("R")
-        game.submit()
+        let _ = game.submit()
 
         game.addLetter("A")
         game.addLetter("B")

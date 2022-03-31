@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct WordleKeyboard: View {
-    @ObservedObject var game: WordleGame
-    var onSubmit: (Wordle.SubmitResult) -> ()
+    let guessedLetters: WordleGame.LetterLookup
+    let onLetter: (Character) -> ()
+    let onBackspace: () -> ()
+    let onEnter: () -> ()
     
     private let alphabet = "QWERTYUIOPASDFGHJKLZXCVBNM"
     
@@ -18,27 +20,13 @@ struct WordleKeyboard: View {
         
             LazyVGrid(columns: Array(repeating: GridItem(), count: 10), alignment: .center) {
                 ForEach(Array(alphabet), id: \.self) { letter in
-                    LetterKey(letter: letter, status: game.guessedLetters[letter])
-                        .onTapGesture {
-                            game.addLetter(letter)
-                        }
+                    LetterKey(letter: letter, status: guessedLetters[letter])
+                        .onTapGesture { onLetter(letter) }
                 }
                 Spacer()
                 Spacer()
-                backspaceKey
-                    .onTapGesture {
-                        game.removeLetter()
-                    }
-                enterKey
-                    .onTapGesture {
-                        // NOTE: Submission animations are handled using onAppear.
-                        //       This seems like poor practice?
-                        //       But not sure how to get it it work as desired otherwise...
-                        //       Maybe it would work now that the IDs are correct?
-                        //       TODO: try animating withAnimation instead of onAppear
-                        let submitResult = game.submit()
-                        onSubmit(submitResult)
-                    }
+                backspaceKey.onTapGesture(perform: onBackspace)
+                enterKey.onTapGesture(perform: onEnter)
             }
             .padding(.horizontal)
         }
@@ -102,17 +90,25 @@ struct WordleKeyboard: View {
     }
 }
 
+
 struct WordleKeyboard_Previews: PreviewProvider {
     static var previews: some View {
-        let game = WordleGame(dictionary: ["THICK"])
-        
-        game.addLetter("T")
-        game.addLetter("I")
-        game.addLetter("G")
-        game.addLetter("H")
-        game.addLetter("T")
-        let _ = game.submit()
-        
-        return WordleKeyboard(game: game, onSubmit: { _ in })
+        VStack {
+            WordleKeyboard(
+                guessedLetters: ["S": .inWord, "F": .notInWord, "P": .inPosition],
+                onLetter: { _ in },
+                onBackspace: {},
+                onEnter: {}
+            )
+            
+            Divider()
+            
+            WordleKeyboard(
+                guessedLetters: [:],
+                onLetter: { _ in },
+                onBackspace: {},
+                onEnter: {}
+            )
+        }
     }
 }
