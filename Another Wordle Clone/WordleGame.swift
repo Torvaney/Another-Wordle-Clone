@@ -12,7 +12,11 @@ class WordleGame: ObservableObject {
     @Published private var model: Wordle
     
     init(dictionary: [String]? = nil) {
-        model = Wordle(dictionary: dictionary ?? WordleGame.loadDictionary())
+        // For now, ignore the case where the dictionary is empty (`try!`) when initialising a new Wordle game
+        // Since we know that the dictionary will always be loaded in the real app
+        // When I learn more about error handling, I will (maybe?) come back and fix this
+        // and the failing cases of dictionary loading
+        model = try! Wordle(dictionary: dictionary ?? WordleGame.loadDictionary())
     }
     
     var state: Wordle.GameState {
@@ -41,14 +45,14 @@ class WordleGame: ObservableObject {
     }
     
     func reset() {
-        model = Wordle(dictionary: model.dictionary, isHardMode: model.isHardMode)
+        model = try! Wordle(dictionary: model.dictionary, isHardMode: model.isHardMode)
     }
     
     func toggleHardMode() {
         if isGameStart {
             // Creating a new game ensures that hard mode is only ever set at the start of the game
             // (In fact changing mid-game is impossible, because `isHardMode` is immutable :))
-            model = Wordle(dictionary: model.dictionary, isHardMode: !model.isHardMode)
+            model = try! Wordle(dictionary: model.dictionary, isHardMode: !model.isHardMode)
         }
     }
     
@@ -264,7 +268,6 @@ class WordleGame: ObservableObject {
                     .map { String($0).uppercased() }
             } catch {
                 // File can't be loaded!
-                // TODO: handle the failure cases with an optional instead
                 return []
             }
         } else {

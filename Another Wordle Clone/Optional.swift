@@ -9,7 +9,7 @@ import Foundation
 
 
 extension Optional {
-    var bool: Bool {
+    var isSome: Bool {
         switch self {
         case .none:
             return false
@@ -19,7 +19,7 @@ extension Optional {
     }
     
     func ifSome<X>(_ yes: X, _ no: X) -> X {
-        if self.bool {
+        if self.isSome {
             return yes
         } else {
             return no

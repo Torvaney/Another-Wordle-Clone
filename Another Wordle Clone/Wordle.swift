@@ -31,11 +31,14 @@ struct Wordle {
         }
     }
     
-    init(dictionary: [String], isHardMode: Bool = false) {
+    init(dictionary: [String], isHardMode: Bool = false) throws {
         // NOTE: make impossible states impossible. Perhaps an empty dictionary should proceed straight to end game?
         //       or require dictionary to be a non-empty list. Or supply dictionary and target as separate arguments?
         // NOTE: What if we get the target using the date to create an index within the dictionary? (Maybe use date to set the seed?)
-        target = dictionary.randomElement() ?? "NIL STATE SHOULD BE IMPOSSIBLE?!"
+        guard let target = dictionary.randomElement() else {
+            throw InitialisationError.emptyDictionary
+        }
+        self.target = target
         self.dictionary = dictionary
         
         maxGuesses = 6
@@ -43,6 +46,10 @@ struct Wordle {
         currentGuess = []
         
         self.isHardMode = isHardMode
+    }
+    
+    enum InitialisationError: Error {
+        case emptyDictionary
     }
     
     // Handling user input
@@ -98,9 +105,40 @@ struct Wordle {
                     }
                 }
             }
-            // Picking the first one actually leaks information about the target word
-            // TODO: pick using the first one as it appears in the current guess
-            .first
+            // Picking the first failing submitResult would leak information about the target word
+            // Instead, pick the first letter as it appears in the user's previous guess
+            // (as far as I can tell, this is how it works in the official game)
+            // with the additional feature of prioritising *missing* letters over letters in the wrong place
+            .min { a, b in
+                switch (a, b) {
+                    
+                // Favour letter inclusion over letter positioning
+                case (.notUsingKnownLetter(_), .notUsingKnownLetterAtLocation(_, _)):
+                    return true
+                case (.notUsingKnownLetterAtLocation(_, _), .notUsingKnownLetter(_)):
+                    return false
+                
+                // Favour first letter in previous guess
+                case (.notUsingKnownLetter(let x), .notUsingKnownLetter(let y)):
+                    if let lastGuess = prevGuesses.last, let ix = lastGuess.firstIndex(of: x), let iy = lastGuess.firstIndex(of: y) {
+                         return ix < iy
+                    } else {
+                        // If there are no previous guesses, there should be no hard mode violations, so prevGuesses.last should never be nil
+                        // Likewise, assuming all previous guesses complied with Hard Mode rules, lastGuess.firstIndex should never be nil either
+                        // So this code block should never be run in practice
+                        // Perhaps there is a way to express these assertions in the type system?
+                        return false
+                    }
+                case (.notUsingKnownLetterAtLocation(_, let i), .notUsingKnownLetterAtLocation(_, let j)):
+                    return i < j
+                    
+                default:
+                    // Non-hard mode results should be impossible, so we don't care about the remaining cases
+                    // Perhaps we should create an additional type for Hard Mode results to simplify this?
+                    return false
+                    
+                }
+            }
     }
     
     var targetGuesses: [(Character, Int, TargetLetterStatus)] {
