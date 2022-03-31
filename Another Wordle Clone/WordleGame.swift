@@ -16,7 +16,7 @@ class WordleGame: ObservableObject {
         // Since we know that the dictionary will always be loaded in the real app
         // When I learn more about error handling, I will (maybe?) come back and fix this
         // and the failing cases of dictionary loading
-        model = try! Wordle(dictionary: dictionary ?? WordleGame.loadDictionary())
+        model = try! Wordle(wordList: dictionary.map({ Wordle.WordList(words: $0) }) ?? WordleGame.loadWordList())
     }
     
     var state: Wordle.GameState {
@@ -45,14 +45,14 @@ class WordleGame: ObservableObject {
     }
     
     func reset() {
-        model = try! Wordle(dictionary: model.dictionary, isHardMode: model.isHardMode)
+        model = try! Wordle(wordList: model.wordList, isHardMode: model.isHardMode)
     }
     
     func toggleHardMode() {
         if isGameStart {
             // Creating a new game ensures that hard mode is only ever set at the start of the game
             // (In fact changing mid-game is impossible, because `isHardMode` is immutable :))
-            model = try! Wordle(dictionary: model.dictionary, isHardMode: !model.isHardMode)
+            model = try! Wordle(wordList: model.wordList, isHardMode: !model.isHardMode)
         }
     }
     
@@ -187,15 +187,10 @@ class WordleGame: ObservableObject {
         
         // Conform to Identifiable, for the purposes of rendering Views
         // A guess is identified by its position in the grid
-        internal var id: Pair<Int, Int> {
-            Pair(first: guessIndex, second: letterIndex)
+        internal var id: HashablePair<Int, Int> {
+            HashablePair(first: guessIndex, second: letterIndex)
         }
         
-    }
-    
-    struct Pair<T: Hashable, U: Hashable>: Hashable {
-      let first: T
-      let second: U
     }
     
     enum LetterGuess: Hashable {
@@ -259,20 +254,26 @@ class WordleGame: ObservableObject {
     
     // MARK: Dictionary (Temp?)
     
-    private static func loadDictionary() -> [String] {
+    private static func loadWordList() -> Wordle.WordList {
         if let dictionaryFilepath = Bundle.main.path(forResource: "DefaultDictionary", ofType: "txt") {
             do {
-                let wordList = try String(contentsOfFile: dictionaryFilepath)
-                return wordList
+                let contents = try String(contentsOfFile: dictionaryFilepath)
+                let (targets, rest) = contents
                     .split(whereSeparator: \.isNewline)
-                    .map { String($0).uppercased() }
+                    .map { String($0) }
+                    .cleave(at: 2315)
+                
+                return Wordle.WordList(
+                    targets.map { ($0, true) } +
+                    rest.map { ($0, false) }
+                )
             } catch {
                 // File can't be loaded!
-                return []
+                return Wordle.WordList([])
             }
         } else {
             // File not found!
-            return []
+            return Wordle.WordList([])
         }
     }
 }

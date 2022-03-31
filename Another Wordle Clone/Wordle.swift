@@ -10,7 +10,7 @@ import Foundation
 
 struct Wordle {
     let target: String
-    let dictionary: [String]
+    let wordList: WordList
     let isHardMode: Bool
     
     let maxGuesses: Int
@@ -31,15 +31,15 @@ struct Wordle {
         }
     }
     
-    init(dictionary: [String], isHardMode: Bool = false) throws {
+    init(wordList: WordList, isHardMode: Bool = false) throws {
         // NOTE: make impossible states impossible. Perhaps an empty dictionary should proceed straight to end game?
         //       or require dictionary to be a non-empty list. Or supply dictionary and target as separate arguments?
         // NOTE: What if we get the target using the date to create an index within the dictionary? (Maybe use date to set the seed?)
-        guard let target = dictionary.randomElement() else {
-            throw InitialisationError.emptyDictionary
+        guard let target = wordList.targets.randomElement() else {
+            throw InitialisationError.emptyWordList
         }
         self.target = target
-        self.dictionary = dictionary
+        self.wordList = wordList
         
         maxGuesses = 6
         prevGuesses = []
@@ -49,7 +49,7 @@ struct Wordle {
     }
     
     enum InitialisationError: Error {
-        case emptyDictionary
+        case emptyWordList
     }
     
     // Handling user input
@@ -72,8 +72,8 @@ struct Wordle {
             // Technically includes too many letters, too.
             // But that *should* be impossible
             return .notEnoughLetters
-        } else if !dictionary.contains(String(currentGuess)) {
-            return .notInDictionary
+        } else if !wordList.words.contains(String(currentGuess)) {
+            return .notInWordList
         } else if let result = hardModeResult, isHardMode {
             return result
         } else {
@@ -175,7 +175,7 @@ struct Wordle {
     enum SubmitResult {
         case success
         case notEnoughLetters
-        case notInDictionary
+        case notInWordList
         case notUsingKnownLetter(_ letter: Character)
         case notUsingKnownLetterAtLocation(_ letter: Character, at: Int)
     }
@@ -184,5 +184,29 @@ struct Wordle {
         case playing
         case won
         case lost
+    }
+    
+    struct WordList {
+        private let dictionary: Set<HashablePair<String, Bool>>
+        
+        // NOTE: Instead of uppercasing strings inside the init,
+        // maybe it would be better to create a custom type UppercasedString
+        // which can only ever be uppercased?
+        
+        init(_ dictionary: [(String, Bool)]) {
+            self.dictionary = Set(dictionary.map { HashablePair(first: $0.0.uppercased(), second: $0.1) })
+        }
+        
+        init(words: [String]) {
+            self.dictionary = Set(words.map { HashablePair(first: $0.uppercased(), second: true) })
+        }
+        
+        var words: [String] {
+            Array(dictionary.map { $0.first })
+        }
+        
+        var targets: [String] {
+            Array(dictionary.compactMap { $0.second ? $0.first : nil })
+        }
     }
 }

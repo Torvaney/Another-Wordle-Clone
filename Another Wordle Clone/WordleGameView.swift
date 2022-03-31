@@ -157,7 +157,7 @@ struct WordleGameView: View {
             return ""
             
         // Basic alerts
-        case .some(.notInDictionary):
+        case .some(.notInWordList):
             return "Not in word list"
         case .some(.notEnoughLetters):
             return "Not enough letters"
