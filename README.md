@@ -4,12 +4,14 @@ A clone of the popular game [Wordle](https://www.nytimes.com/games/wordle/index.
 
 This project was intended only as an exercise to learn Swift and SwiftUI alongside the first half of the [CS193p course](https://cs193p.sites.stanford.edu/).
 
+https://user-images.githubusercontent.com/11335988/161127296-a73adab2-52cc-4af5-ad07-5c4ae4893a54.mov
+
 ## Features
 
 * Correct implementation of letter colouring, including when multiple instances of the same letter are in the guess word or in the target word
 * Hard mode
 * Similar (but not exactly identical) animations, including alert pill when an invalid submission is attempted
-* ~Original wordle dictionary, with only "guessable" words included as the target~
+* Original wordle dictionary, with only "guessable" words included as the target
 
 ### Differences
 
